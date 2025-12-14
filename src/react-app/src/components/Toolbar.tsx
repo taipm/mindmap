@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import html2canvas from 'html2canvas';
 import { useMindmapStore } from '../store/mindmapStore';
+import { useTabsStore } from '../store/tabsStore';
+import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import Templates from './Templates';
 import SaveDialog from './SaveDialog';
+import SearchBar from './SearchBar';
 import './Toolbar.css';
 
 declare global {
@@ -17,7 +20,28 @@ declare global {
 
 export default function Toolbar() {
   const store = useMindmapStore();
+  const createTab = useTabsStore((state) => state.createTab);
+  const renameTab = useTabsStore((state) => state.renameTab);
+  const markTabAsSaved = useTabsStore((state) => state.markTabAsSaved);
+  const activeTabId = useTabsStore((state) => state.activeTabId);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
+
+  const handleNew = () => {
+    // Save current tab state before creating new
+    if (activeTabId) {
+      const saveTabState = useMindmapStore.getState().saveTabState;
+      saveTabState();
+    }
+
+    // Create new tab and get the tab ID
+    const newTabId = createTab();
+
+    // Load the new tab (clear canvas for new mindmap)
+    const setCurrentTab = useMindmapStore.getState().setCurrentTab;
+    setCurrentTab(newTabId);
+
+    store.clear();
+  };
 
   const handleSaveClick = () => {
     setShowSaveDialog(true);
@@ -29,6 +53,12 @@ export default function Toolbar() {
 
       // Add to recent files
       store.addRecentFile(filename);
+
+      // Update tab name to match filename
+      if (activeTabId) {
+        renameTab(activeTabId, filename);
+        markTabAsSaved(activeTabId);
+      }
 
       if (!(globalThis as any).electronAPI) {
         // Fallback for development mode
@@ -187,6 +217,24 @@ export default function Toolbar() {
     }
   };
 
+  // Setup keyboard shortcuts
+  useKeyboardShortcuts({
+    onNew: handleNew,
+    onNewTab: () => {
+      const saveTabState = useMindmapStore.getState().saveTabState;
+      saveTabState();
+      createTab();
+    },
+    onSave: () => setShowSaveDialog(true),
+    onOpen: () => {
+      handleOpen().catch(() => {
+        // Error already handled in handleOpen
+      });
+    },
+    onUndo: handleUndo,
+    onRedo: handleRedo,
+  });
+
   return (
     <>
       <SaveDialog
@@ -200,7 +248,17 @@ export default function Toolbar() {
           <h1>Mindmap Editor</h1>
         </div>
 
+        <SearchBar />
+
         <div className="toolbar-section">
+          <button
+            type="button"
+            onClick={handleNew}
+            className="toolbar-btn"
+            title="New mindmap (Ctrl+N)"
+          >
+            📝 New
+          </button>
           <Templates />
         </div>
 

@@ -10,10 +10,18 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { useMindmapStore } from './store/mindmapStore';
+import { useTabsStore } from './store/tabsStore';
 import MindmapNode from './components/MindmapNode';
 import Toolbar from './components/Toolbar';
+import TabsBar from './components/TabsBar';
 import RecentFiles from './components/RecentFiles';
 import './App.css';
+
+const markTabAsUnsaved = (activeTabId: string | null) => {
+  if (activeTabId) {
+    useTabsStore.getState().markTabAsUnsaved(activeTabId);
+  }
+};
 
 const nodeTypes = {
   mindmapNode: MindmapNode,
@@ -23,6 +31,8 @@ function App() {
   const store = useMindmapStore();
   const storeNodes = useMindmapStore((state) => state.nodes);
   const storeEdges = useMindmapStore((state) => state.edges);
+  const setCurrentTab = useMindmapStore((state) => state.setCurrentTab);
+  const activeTabId = useTabsStore((state) => state.activeTabId);
 
   // Initialize with store's current state
   const initialNodes = storeNodes.map((node) => ({
@@ -41,6 +51,27 @@ function App() {
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+
+  // Initialize current tab on first load
+  useEffect(() => {
+    if (activeTabId) {
+      setCurrentTab(activeTabId);
+    }
+  }, [activeTabId, setCurrentTab]);
+
+  // Warn before closing if there are unsaved changes
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      const hasUnsavedTabs = useTabsStore.getState().hasUnsavedTabs();
+      if (hasUnsavedTabs) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, []);
 
   // Sync store changes to React state
   useEffect(() => {
@@ -74,14 +105,16 @@ function App() {
         from: connection.source || '',
         to: connection.target || '',
       });
+      markTabAsUnsaved(activeTabId);
     },
-    [edges, setEdges, store]
+    [edges, setEdges, store, activeTabId]
   );
 
   const onNodesChangeLocal = useCallback(
     (changes: any) => {
       onNodesChange(changes);
       // Sync position changes to store
+      const hasPositionChange = changes.some((change: any) => change.type === 'position');
       changes.forEach((change: any) => {
         if (change.type === 'position' && change.positionAbsolute) {
           store.updateNode(change.id, {
@@ -89,17 +122,20 @@ function App() {
           });
         }
       });
+      if (hasPositionChange) {
+        markTabAsUnsaved(activeTabId);
+      }
     },
-    [onNodesChange, store]
+    [onNodesChange, store, activeTabId]
   );
 
-  useEffect(() => {
-    store.setNodes(nodes);
-  }, [nodes, store]);
+  // This effect is removed because nodes are already synced through the store
+  // via onNodesChangeLocal callback. Keeping it causes infinite loops during tab switching.
 
   return (
     <div className="app-container">
       <Toolbar />
+      <TabsBar />
       <div className="app-content">
         <RecentFiles />
         <div className="mindmap-editor">

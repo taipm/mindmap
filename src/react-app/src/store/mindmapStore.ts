@@ -29,6 +29,14 @@ interface RecentFile {
   nodeCount: number;
 }
 
+interface TabMindmap {
+  nodes: MindmapNode[];
+  edges: MindmapEdge[];
+  history: HistoryEntry[];
+  historyIndex: number;
+  filename: string | null;
+}
+
 interface MindmapStore {
   nodes: MindmapNode[];
   edges: MindmapEdge[];
@@ -36,6 +44,19 @@ interface MindmapStore {
   historyIndex: number;
   filename: string | null;
   recentFiles: RecentFile[];
+  tabData: Record<string, TabMindmap>;
+  currentTabId: string | null;
+  searchQuery: string;
+  highlightedNodeIds: string[];
+
+  // Tab context management
+  setCurrentTab: (tabId: string) => void;
+  saveTabState: () => void;
+  loadTabState: (tabId: string) => void;
+
+  // Search functionality
+  setSearchQuery: (query: string) => void;
+  updateHighlightedNodes: () => void;
 
   // CRUD operations
   addNode: (node: Omit<MindmapNode, 'id'>) => string;
@@ -72,6 +93,7 @@ interface MindmapStore {
 
   // Recent files
   addRecentFile: (filename: string) => void;
+  removeRecentFile: (filename: string) => void;
   getRecentFiles: () => RecentFile[];
   clearRecentFiles: () => void;
 }
@@ -151,6 +173,17 @@ export const useMindmapStore = create<MindmapStore>((set, get) => {
     console.warn('Failed to load recent files from localStorage:', error);
   }
 
+  // Load tab-specific mindmap data from localStorage
+  let initialTabData: Record<string, TabMindmap> = {};
+  try {
+    const stored = localStorage.getItem('mindmap_tab_data');
+    if (stored) {
+      initialTabData = JSON.parse(stored);
+    }
+  } catch (error) {
+    console.warn('Failed to load tab data from localStorage:', error);
+  }
+
   return {
     nodes: initialNodes,
     edges: [],
@@ -158,6 +191,105 @@ export const useMindmapStore = create<MindmapStore>((set, get) => {
     historyIndex: 0,
     filename: null,
     recentFiles: initialRecentFiles,
+    tabData: initialTabData,
+    currentTabId: null,
+    searchQuery: '',
+    highlightedNodeIds: [],
+
+    setCurrentTab: (tabId: string) => {
+      set((state) => {
+        // Save current tab state before switching
+        let updatedTabData = { ...state.tabData };
+        if (state.currentTabId && state.currentTabId !== tabId) {
+          updatedTabData[state.currentTabId] = {
+            nodes: state.nodes,
+            edges: state.edges,
+            history: state.history,
+            historyIndex: state.historyIndex,
+            filename: state.filename,
+          };
+        }
+
+        // Load new tab state or create new one
+        const targetTabData = updatedTabData[tabId];
+        if (targetTabData) {
+          return {
+            nodes: targetTabData.nodes,
+            edges: targetTabData.edges,
+            history: targetTabData.history,
+            historyIndex: targetTabData.historyIndex,
+            filename: targetTabData.filename,
+            currentTabId: tabId,
+            tabData: updatedTabData,
+          };
+        } else {
+          // Initialize new tab with default state
+          const initialNodes: MindmapNode[] = [
+            {
+              id: 'root',
+              title: 'Mindmap',
+              parentId: null,
+              position: { x: 0, y: 0 },
+              color: COLORS[0],
+            },
+          ];
+          updatedTabData[tabId] = {
+            nodes: initialNodes,
+            edges: [],
+            history: [{ nodes: initialNodes, edges: [] }],
+            historyIndex: 0,
+            filename: null,
+          };
+          return {
+            nodes: initialNodes,
+            edges: [],
+            history: [{ nodes: initialNodes, edges: [] }],
+            historyIndex: 0,
+            filename: null,
+            currentTabId: tabId,
+            tabData: updatedTabData,
+          };
+        }
+      });
+
+      // Save to localStorage
+      const newState = get();
+      try {
+        localStorage.setItem('mindmap_tab_data', JSON.stringify(newState.tabData));
+      } catch (error) {
+        console.warn('Failed to save tab data to localStorage:', error);
+      }
+    },
+
+    saveTabState: () => {
+      const state = get();
+      if (state.currentTabId) {
+        set((s) => ({
+          tabData: {
+            ...s.tabData,
+            [s.currentTabId!]: {
+              nodes: s.nodes,
+              edges: s.edges,
+              history: s.history,
+              historyIndex: s.historyIndex,
+              filename: s.filename,
+            },
+          },
+        }));
+
+        // Save to localStorage
+        const newState = get();
+        try {
+          localStorage.setItem('mindmap_tab_data', JSON.stringify(newState.tabData));
+        } catch (error) {
+          console.warn('Failed to save tab data to localStorage:', error);
+        }
+      }
+    },
+
+    loadTabState: (tabId: string) => {
+      get().setCurrentTab(tabId);
+    },
 
     addNode: (nodeData) => {
       const newId = `node-${Date.now()}`;
@@ -500,6 +632,19 @@ export const useMindmapStore = create<MindmapStore>((set, get) => {
       return state.recentFiles;
     },
 
+    removeRecentFile: (filename: string) => {
+      const state = get();
+      const updated = state.recentFiles.filter((f) => f.filename !== filename);
+      set({ recentFiles: updated });
+
+      // Save to localStorage
+      try {
+        localStorage.setItem('mindmap_recent_files', JSON.stringify(updated));
+      } catch (error) {
+        console.warn('Failed to save recent files to localStorage:', error);
+      }
+    },
+
     clearRecentFiles: () => {
       set({ recentFiles: [] });
       try {
@@ -507,6 +652,67 @@ export const useMindmapStore = create<MindmapStore>((set, get) => {
       } catch (error) {
         console.warn('Failed to clear recent files from localStorage:', error);
       }
+    },
+
+    setSearchQuery: (query: string) => {
+      set((state) => {
+        const trimmedQuery = query.toLowerCase().trim();
+
+        if (!trimmedQuery) {
+          return { searchQuery: query, highlightedNodeIds: [] };
+        }
+
+        const highlighted = new Set<string>();
+        state.nodes.forEach((node) => {
+          if (node.title.toLowerCase().includes(trimmedQuery)) {
+            highlighted.add(node.id);
+            // Also highlight parent nodes
+            const addParentsToHighlighted = (nId: string | null) => {
+              let currentId = nId;
+              while (currentId) {
+                highlighted.add(currentId);
+                const parent = state.nodes.find((n) => n.id === currentId);
+                currentId = parent?.parentId || null;
+              }
+            };
+            addParentsToHighlighted(node.parentId);
+          }
+        });
+
+        return {
+          searchQuery: query,
+          highlightedNodeIds: Array.from(highlighted),
+        };
+      });
+    },
+
+    updateHighlightedNodes: () => {
+      const state = get();
+      const query = state.searchQuery.toLowerCase().trim();
+
+      if (!query) {
+        set({ highlightedNodeIds: [] });
+        return;
+      }
+
+      const highlighted = new Set<string>();
+      state.nodes.forEach((node) => {
+        if (node.title.toLowerCase().includes(query)) {
+          highlighted.add(node.id);
+          // Also highlight parent nodes
+          const addParentsToHighlighted = (nId: string | null) => {
+            let currentId = nId;
+            while (currentId) {
+              highlighted.add(currentId);
+              const parent = state.nodes.find((n) => n.id === currentId);
+              currentId = parent?.parentId || null;
+            }
+          };
+          addParentsToHighlighted(node.parentId);
+        }
+      });
+
+      set({ highlightedNodeIds: Array.from(highlighted) });
     },
   };
 });

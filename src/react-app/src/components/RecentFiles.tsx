@@ -22,6 +22,10 @@ export default function RecentFiles() {
     }
   };
 
+  const handleRemoveFile = (filename: string) => {
+    store.removeRecentFile(filename);
+  };
+
   const handleClearRecent = () => {
     if (globalThis.confirm('Clear recent files list?')) {
       store.clearRecentFiles();
@@ -66,23 +70,31 @@ export default function RecentFiles() {
             <div
               key={`${file.filename}-${file.timestamp}`}
               className="recent-file-item"
-              onClick={() => handleLoadFile(file.filename)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') handleLoadFile(file.filename);
-              }}
             >
-              <div className="file-info">
-                <div className="file-name" title={file.filename}>
-                  {file.filename}
+              <button
+                type="button"
+                className="file-load-btn"
+                onClick={() => handleLoadFile(file.filename)}
+              >
+                <div className="file-info">
+                  <div className="file-name" title={file.filename}>
+                    {file.filename}
+                  </div>
+                  <div className="file-meta">
+                    <span className="file-time">{file.lastModified}</span>
+                    <span className="file-count">📊 {file.nodeCount} nodes</span>
+                  </div>
                 </div>
-                <div className="file-meta">
-                  <span className="file-time">{file.lastModified}</span>
-                  <span className="file-count">📊 {file.nodeCount} nodes</span>
-                </div>
-              </div>
-              <div className="file-index">{index + 1}</div>
+                <div className="file-index">{index + 1}</div>
+              </button>
+              <button
+                type="button"
+                className="file-delete-btn"
+                onClick={() => handleRemoveFile(file.filename)}
+                title="Remove from recent files"
+              >
+                ✕
+              </button>
             </div>
           ))}
         </div>

@@ -96,3 +96,20 @@
   background-color: rgba(255, 50, 50, 0.5);
   transform: scale(1.1);
 }
+
+.mindmap-node.highlighted {
+  outline: 3px solid #fbbf24;
+  outline-offset: 2px;
+  box-shadow: 0 8px 20px rgba(251, 191, 36, 0.4), 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.mindmap-node.dimmed {
+  opacity: 0.35;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.mindmap-node.dimmed:hover {
+  opacity: 0.45;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transform: none;
+}
