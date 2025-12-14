@@ -148,6 +148,109 @@ const TEMPLATES = {
       { id: 'edge-root-challenges', from: 'root', to: 'challenges' },
     ],
   },
+  math: {
+    title: 'Quadratic Equation Solver',
+    nodes: [
+      {
+        id: 'root',
+        title: 'ax² + bx + c = 0',
+        parentId: null,
+        position: { x: 0, y: 0 },
+        color: '#9B59B6',
+        metadata: { latex: 'ax^2 + bx + c = 0' }
+      },
+      {
+        id: 'discriminant',
+        title: 'Δ = b² - 4ac',
+        parentId: 'root',
+        position: { x: -400, y: 150 },
+        color: '#3498DB',
+        metadata: { latex: String.raw`\Delta = b^2 - 4ac` }
+      },
+      {
+        id: 'roots',
+        title: 'Solutions',
+        parentId: 'root',
+        position: { x: 200, y: 150 },
+        color: '#E74C3C'
+      },
+      {
+        id: 'case-positive',
+        title: 'Δ > 0: Two Real Roots',
+        parentId: 'discriminant',
+        position: { x: -550, y: 300 },
+        color: '#2ECC71',
+        metadata: { latex: String.raw`x = \frac{-b \pm \sqrt{\Delta}}{2a}` }
+      },
+      {
+        id: 'case-zero',
+        title: 'Δ = 0: One Root',
+        parentId: 'discriminant',
+        position: { x: -300, y: 300 },
+        color: '#F39C12',
+        metadata: { latex: String.raw`x = \frac{-b}{2a}` }
+      },
+      {
+        id: 'case-negative',
+        title: 'Δ < 0: Complex Roots',
+        parentId: 'discriminant',
+        position: { x: -50, y: 300 },
+        color: '#95A5A6',
+        metadata: { latex: String.raw`x = \frac{-b \pm i\sqrt{|\Delta|}}{2a}` }
+      },
+      {
+        id: 'vieta',
+        title: 'Vieta\'s Formulas',
+        parentId: 'roots',
+        position: { x: 50, y: 300 },
+        color: '#1ABC9C'
+      },
+      {
+        id: 'vieta-sum',
+        title: 'x₁ + x₂ = -b/a',
+        parentId: 'vieta',
+        position: { x: -100, y: 450 },
+        color: '#16A085',
+        metadata: { latex: String.raw`x_1 + x_2 = -\frac{b}{a}` }
+      },
+      {
+        id: 'vieta-product',
+        title: 'x₁ · x₂ = c/a',
+        parentId: 'vieta',
+        position: { x: 200, y: 450 },
+        color: '#16A085',
+        metadata: { latex: String.raw`x_1 \cdot x_2 = \frac{c}{a}` }
+      },
+      {
+        id: 'example',
+        title: 'Example: 2x² - 5x + 3 = 0',
+        parentId: 'roots',
+        position: { x: 400, y: 300 },
+        color: '#D35400',
+        metadata: { latex: '2x^2 - 5x + 3 = 0' }
+      },
+      {
+        id: 'example-solve',
+        title: 'Δ = 25 - 24 = 1, x = 1 or x = 1.5',
+        parentId: 'example',
+        position: { x: 400, y: 450 },
+        color: '#C0392B',
+        metadata: { latex: String.raw`\Delta = 1 \Rightarrow x = 1 \text{ or } x = 1.5` }
+      },
+    ],
+    edges: [
+      { id: 'edge-root-discriminant', from: 'root', to: 'discriminant' },
+      { id: 'edge-root-roots', from: 'root', to: 'roots' },
+      { id: 'edge-discriminant-positive', from: 'discriminant', to: 'case-positive' },
+      { id: 'edge-discriminant-zero', from: 'discriminant', to: 'case-zero' },
+      { id: 'edge-discriminant-negative', from: 'discriminant', to: 'case-negative' },
+      { id: 'edge-roots-vieta', from: 'roots', to: 'vieta' },
+      { id: 'edge-vieta-sum', from: 'vieta', to: 'vieta-sum' },
+      { id: 'edge-vieta-product', from: 'vieta', to: 'vieta-product' },
+      { id: 'edge-roots-example', from: 'roots', to: 'example' },
+      { id: 'edge-example-solve', from: 'example', to: 'example-solve' },
+    ],
+  },
 };
 
 export const useMindmapStore = create<MindmapStore>((set, get) => {

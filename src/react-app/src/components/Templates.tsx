@@ -25,6 +25,12 @@ export default function Templates() {
       description: 'Capture ideas, features, improvements, and challenges',
       icon: '💡',
     },
+    {
+      key: 'math',
+      title: 'Quadratic Equation Solver',
+      description: 'Explore quadratic equations with discriminant analysis and solutions',
+      icon: '∑',
+    },
   ];
 
   const handleSelectTemplate = (key: string) => {
