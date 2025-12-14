@@ -52,6 +52,7 @@ interface MindmapStore {
   // File operations
   saveFile: (filename: string) => string;
   loadFile: (data: string) => void;
+  loadFileFromStorage: (filename: string) => boolean;
   clear: () => void;
 
   // Utility
@@ -286,6 +287,13 @@ export const useMindmapStore = create<MindmapStore>((set, get) => {
         edges: state.edges,
       };
 
+      // Save to localStorage for recent files functionality
+      try {
+        localStorage.setItem(`mindmap_file_${filename}`, JSON.stringify(data));
+      } catch (error) {
+        console.warn('Failed to save file to localStorage:', error);
+      }
+
       set({ filename });
       return JSON.stringify(data, null, 2);
     },
@@ -302,6 +310,29 @@ export const useMindmapStore = create<MindmapStore>((set, get) => {
         });
       } catch (error) {
         console.error('Failed to load file:', error);
+      }
+    },
+
+    loadFileFromStorage: (filename: string) => {
+      try {
+        const stored = localStorage.getItem(`mindmap_file_${filename}`);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          set({
+            nodes: parsed.nodes || [],
+            edges: parsed.edges || [],
+            filename: parsed.title,
+            history: [{ nodes: parsed.nodes || [], edges: parsed.edges || [] }],
+            historyIndex: 0,
+          });
+          return true;
+        } else {
+          console.warn(`File ${filename} not found in localStorage`);
+          return false;
+        }
+      } catch (error) {
+        console.error('Failed to load file from storage:', error);
+        return false;
       }
     },
 

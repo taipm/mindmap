@@ -7,19 +7,14 @@ export default function RecentFiles() {
   const store = useMindmapStore();
   const [isExpanded, setIsExpanded] = useState(true);
 
-  const handleLoadFile = async (filename: string) => {
+  const handleLoadFile = (filename: string) => {
     try {
-      const globalThis_api = globalThis as any;
-      if (!globalThis_api.electronAPI) {
-        // Dev mode: use file input
-        alert('In development mode, please use the Open button to load files');
-        return;
-      }
-
-      const result = await globalThis_api.electronAPI.openFile();
-      if (result.success && result.content) {
-        store.loadFile(result.content);
-        alert('File loaded successfully');
+      // Load file from localStorage (works in both dev and production)
+      const loaded = store.loadFileFromStorage(filename);
+      if (loaded) {
+        alert(`Loaded: ${filename}`);
+      } else {
+        alert(`Failed to load: ${filename}\nFile may have been removed.`);
       }
     } catch (error) {
       console.error('Load error:', error);
