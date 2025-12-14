@@ -6,6 +6,7 @@ import { useTabsStore } from '../store/tabsStore';
 import NodeContextMenu from './NodeContextMenu';
 import LaTeXRenderer from './LaTeXRenderer';
 import YouTubeModal from './YouTubeModal';
+import NodeNoteEditor from './NodeNoteEditor';
 import NodeMetadataIndicators from './NodeMetadataIndicators';
 import './MindmapNode.css';
 
@@ -20,6 +21,7 @@ export default function MindmapNode({ data, id, selected }: MindmapNodeProps) {
   const [title, setTitle] = useState(data.label);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
   const [showYouTubeModal, setShowYouTubeModal] = useState(false);
+  const [showNoteEditor, setShowNoteEditor] = useState(false);
   const updateNode = useMindmapStore((state) => state.updateNode);
   const deleteNode = useMindmapStore((state) => state.deleteNode);
   const addNode = useMindmapStore((state) => state.addNode);
@@ -131,7 +133,16 @@ export default function MindmapNode({ data, id, selected }: MindmapNodeProps) {
     }
   };
 
+  const handleSaveNote = (notes: string) => {
+    updateNode(id, { description: notes });
+    if (activeTabId) {
+      markTabAsUnsaved(activeTabId);
+    }
+    setShowNoteEditor(false);
+  };
+
   const youtubeLinks = data.metadata?.youtubeLinks || [];
+  const description = data.metadata?.description || '';
 
   return (
     <>
@@ -140,6 +151,13 @@ export default function MindmapNode({ data, id, selected }: MindmapNodeProps) {
         links={youtubeLinks}
         onSave={handleSaveYouTubeLinks}
         onClose={() => setShowYouTubeModal(false)}
+      />
+      <NodeNoteEditor
+        isOpen={showNoteEditor}
+        nodeTitle={title}
+        notes={description}
+        onSave={handleSaveNote}
+        onClose={() => setShowNoteEditor(false)}
       />
       {contextMenu &&
         createPortal(
@@ -214,6 +232,14 @@ export default function MindmapNode({ data, id, selected }: MindmapNodeProps) {
               title="Add YouTube references"
             >
               🎥{youtubeLinks.length > 0 && <span className="badge">{youtubeLinks.length}</span>}
+            </button>
+            <button
+              type="button"
+              className="node-btn note-btn"
+              onClick={() => setShowNoteEditor(true)}
+              title="Edit notes"
+            >
+              📝{description && <span className="badge">✓</span>}
             </button>
             <button
               type="button"

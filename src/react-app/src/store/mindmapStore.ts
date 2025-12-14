@@ -8,6 +8,7 @@ interface MindmapNode {
   position: { x: number; y: number };
   color: string;
   metadata?: Record<string, any>;
+  description?: string; // Rich text notes/description
 }
 
 interface MindmapEdge {
