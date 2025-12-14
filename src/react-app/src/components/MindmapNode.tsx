@@ -91,10 +91,17 @@ export default function MindmapNode({ data, id, selected }: MindmapNodeProps) {
   };
 
   const handleSaveLatex = (latex: string) => {
+    console.log('[MindmapNode.handleSaveLatex]', {
+      nodeId: id,
+      nodeTitle: data.label,
+      latex,
+      currentNodeMetadata: currentNode?.metadata,
+    });
     const updatedMetadata = {
       ...currentNode?.metadata,
       latex
     };
+    console.log('[MindmapNode.handleSaveLatex] updatedMetadata:', updatedMetadata);
     updateNode(id, {
       metadata: updatedMetadata
     });

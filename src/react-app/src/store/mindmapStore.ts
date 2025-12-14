@@ -319,6 +319,12 @@ export const useMindmapStore = create<MindmapStore>((set, get) => {
       }
 
       localStorage.setItem('mindmap_tab_data', JSON.stringify(tabData));
+      console.log('[persistTabState]', {
+        currentTabId: state.currentTabId,
+        nodeCount: state.nodes.length,
+        savedTo: state.currentTabId || '__default__',
+        firstNodeMetadata: state.nodes[0]?.metadata,
+      });
     } catch (error) {
       console.warn('Failed to save tab data:', error);
     }
@@ -515,8 +521,16 @@ export const useMindmapStore = create<MindmapStore>((set, get) => {
     },
 
     updateNode: (id, updates) => {
+      console.log('[updateNode] called with:', { id, updates });
       set((state) => ({
-        nodes: state.nodes.map((node) => (node.id === id ? { ...node, ...updates } : node)),
+        nodes: state.nodes.map((node) => {
+          if (node.id === id) {
+            const updated = { ...node, ...updates };
+            console.log('[updateNode] updated node:', { id, updated });
+            return updated;
+          }
+          return node;
+        }),
       }));
       get().pushHistory();
       persistTabState();
