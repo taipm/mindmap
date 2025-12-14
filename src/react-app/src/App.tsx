@@ -97,12 +97,6 @@ function App() {
     store.setNodes(nodes);
   }, [nodes, store]);
 
-  // Log nodes for debugging
-  useEffect(() => {
-    console.log('Current nodes:', nodes);
-    console.log('Current edges:', edges);
-  }, [nodes, edges]);
-
   return (
     <div className="app-container">
       <Toolbar />
