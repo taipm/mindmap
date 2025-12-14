@@ -47,7 +47,19 @@ export default function Toolbar() {
   const handleOpen = async () => {
     try {
       if (!(globalThis as any).electronAPI) {
-        alert('Open file feature requires Electron context');
+        // Fallback for development mode - use file input
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        input.onchange = async (e: any) => {
+          const file = e.target.files[0];
+          if (file) {
+            const content = await file.text();
+            store.loadFile(content);
+            alert('File loaded successfully (development mode)');
+          }
+        };
+        input.click();
         return;
       }
 
