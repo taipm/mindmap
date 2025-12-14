@@ -5,6 +5,7 @@ import { useMindmapStore } from '../store/mindmapStore';
 import { useTabsStore } from '../store/tabsStore';
 import NodeContextMenu from './NodeContextMenu';
 import LaTeXRenderer from './LaTeXRenderer';
+import YouTubeModal from './YouTubeModal';
 import './MindmapNode.css';
 
 interface MindmapNodeProps {
@@ -17,6 +18,7 @@ export default function MindmapNode({ data, id, selected }: MindmapNodeProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(data.label);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
+  const [showYouTubeModal, setShowYouTubeModal] = useState(false);
   const updateNode = useMindmapStore((state) => state.updateNode);
   const deleteNode = useMindmapStore((state) => state.deleteNode);
   const addNode = useMindmapStore((state) => state.addNode);
@@ -116,8 +118,28 @@ export default function MindmapNode({ data, id, selected }: MindmapNodeProps) {
     setIsEditing(true);
   };
 
+  const handleSaveYouTubeLinks = (links: Array<{ url: string; title?: string }>) => {
+    updateNode(id, {
+      metadata: {
+        ...data.metadata,
+        youtubeLinks: links,
+      },
+    });
+    if (activeTabId) {
+      markTabAsUnsaved(activeTabId);
+    }
+  };
+
+  const youtubeLinks = data.metadata?.youtubeLinks || [];
+
   return (
     <>
+      <YouTubeModal
+        isOpen={showYouTubeModal}
+        links={youtubeLinks}
+        onSave={handleSaveYouTubeLinks}
+        onClose={() => setShowYouTubeModal(false)}
+      />
       {contextMenu &&
         createPortal(
           <NodeContextMenu
@@ -181,6 +203,14 @@ export default function MindmapNode({ data, id, selected }: MindmapNodeProps) {
         </button>
         {id !== 'root' && (
           <>
+            <button
+              type="button"
+              className="node-btn youtube-btn"
+              onClick={() => setShowYouTubeModal(true)}
+              title="Add YouTube references"
+            >
+              🎥{youtubeLinks.length > 0 && <span className="badge">{youtubeLinks.length}</span>}
+            </button>
             <button
               type="button"
               className="node-btn duplicate-btn"

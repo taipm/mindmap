@@ -1,0 +1,236 @@
+.youtube-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.youtube-modal {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.youtube-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #e0e0e0;
+  flex-shrink: 0;
+}
+
+.youtube-modal-header h2 {
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+  font-weight: 600;
+}
+
+.youtube-modal-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #999;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.youtube-modal-close:hover {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.youtube-modal-content {
+  padding: 20px;
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.youtube-input-section {
+  margin-bottom: 20px;
+}
+
+.youtube-input-section label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.youtube-input-group {
+  display: flex;
+  gap: 8px;
+}
+
+.youtube-input-group input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: border-color 0.2s ease;
+}
+
+.youtube-input-group input:focus {
+  outline: none;
+  border-color: #ff0000;
+  box-shadow: 0 0 0 2px rgba(255, 0, 0, 0.1);
+}
+
+.youtube-btn-add {
+  padding: 10px 16px;
+  background-color: #ff0000;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.youtube-btn-add:hover {
+  background-color: #cc0000;
+  transform: translateY(-1px);
+}
+
+.youtube-error {
+  color: #d32f2f;
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+.youtube-links-list {
+  margin-top: 20px;
+}
+
+.youtube-links-list label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #333;
+}
+
+.youtube-link-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  transition: all 0.2s ease;
+}
+
+.youtube-link-item:hover {
+  background-color: #efefef;
+}
+
+.youtube-thumbnail {
+  width: 60px;
+  height: 45px;
+  border-radius: 4px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.youtube-link-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.youtube-link-url {
+  display: block;
+  font-size: 13px;
+  color: #0066cc;
+  text-decoration: none;
+  word-break: break-all;
+  transition: color 0.2s ease;
+}
+
+.youtube-link-url:hover {
+  color: #004499;
+  text-decoration: underline;
+}
+
+.youtube-btn-remove {
+  background-color: rgba(255, 0, 0, 0.1);
+  color: #ff0000;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 6px 8px;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.youtube-btn-remove:hover {
+  background-color: rgba(255, 0, 0, 0.2);
+}
+
+.youtube-modal-footer {
+  display: flex;
+  gap: 12px;
+  padding: 16px 20px;
+  border-top: 1px solid #e0e0e0;
+  flex-shrink: 0;
+  justify-content: flex-end;
+}
+
+.youtube-btn-cancel {
+  padding: 10px 16px;
+  background-color: #f0f0f0;
+  color: #333;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.youtube-btn-cancel:hover {
+  background-color: #e0e0e0;
+}
+
+.youtube-btn-save {
+  padding: 10px 16px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.youtube-btn-save:hover {
+  background-color: #45a049;
+  transform: translateY(-1px);
+}
