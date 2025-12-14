@@ -17,4 +17,6 @@
   display: flex;
   overflow: hidden;
   background-color: #fafafa;
+  height: 100%;
+  width: 100%;
 }
