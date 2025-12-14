@@ -11,13 +11,19 @@ A powerful **multi-user collaborative mindmap editor** for desktop built with **
   - Create nodes with + button
   - Edit node titles with double-click
   - Delete nodes with ✕ button
+  - **NEW:** Duplicate nodes (📋 button) with auto-positioning
   - Drag-drop repositioning
   - Color-coded nodes
 - ✅ **File Operations**
   - Save mindmap to JSON file
   - Load mindmap from JSON file
+  - **NEW:** Smart filename generation (auto date/time)
 - ✅ **Export Formats** - PNG, SVG, JSON
 - ✅ **Undo/Redo** - Full history support with Zustand state management
+- ✅ **Templates** - Pre-built mindmap structures
+  - Project Planning
+  - Learning Path
+  - Brainstorming
 - ✅ **Toolbar** - Easy-access buttons for all operations
 
 ## 📦 Tech Stack
@@ -58,9 +64,18 @@ Mindmaps save as JSON:
 ## ⌨️ Shortcuts
 
 - Double-click node to edit
-- + button to add child node
-- ✕ button to delete node
+- **+** button to add child node
+- **📋** button to duplicate node (NEW!)
+- **✕** button to delete node
+- **🎨** Templates button to load pre-built structures (NEW!)
 - Drag to move nodes
+
+## 📚 Documentation
+
+- [NEW_FEATURES.md](NEW_FEATURES.md) - Detailed guide to Templates, Duplicate, and Smart Filenames
+- [QUICK_COMMANDS.md](QUICK_COMMANDS.md) - Development reference and troubleshooting
+- [FIXLOG.md](FIXLOG.md) - Bug fixes and technical improvements
+- [TEST_GUIDE.md](TEST_GUIDE.md) - Testing procedures
 
 ## 🔄 Phase 2: Multi-User (Upcoming)
 
