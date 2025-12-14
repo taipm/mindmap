@@ -1,0 +1,348 @@
+{
+  "id": "mindmap-python-course",
+  "title": "Python Programming Course",
+  "version": 1,
+  "createdAt": "2025-12-14T00:00:00.000Z",
+  "updatedAt": "2025-12-14T00:00:00.000Z",
+  "owner": "local",
+  "permissions": [],
+  "nodes": [
+    {
+      "id": "root",
+      "title": "Python Programming Course",
+      "parentId": null,
+      "position": { "x": 0, "y": 0 },
+      "color": "#FF6B6B",
+      "metadata": {
+        "youtubeLinks": []
+      }
+    },
+    {
+      "id": "basics",
+      "title": "Fundamentals",
+      "parentId": "root",
+      "position": { "x": -400, "y": 100 },
+      "color": "#4ECDC4",
+      "metadata": {
+        "youtubeLinks": []
+      }
+    },
+    {
+      "id": "basics-syntax",
+      "title": "Syntax & Variables",
+      "parentId": "basics",
+      "position": { "x": -550, "y": 200 },
+      "color": "#45B7D1",
+      "metadata": {
+        "youtubeLinks": [
+          { "url": "https://www.youtube.com/watch?v=_uQrJ0TkSuc" },
+          { "url": "https://www.youtube.com/watch?v=kqtZJLDL348" }
+        ]
+      }
+    },
+    {
+      "id": "basics-types",
+      "title": "Data Types: $int, str, list$",
+      "parentId": "basics",
+      "position": { "x": -400, "y": 250 },
+      "color": "#45B7D1",
+      "metadata": {
+        "youtubeLinks": [
+          { "url": "https://www.youtube.com/watch?v=ohCDV5j-ces" }
+        ]
+      }
+    },
+    {
+      "id": "basics-ops",
+      "title": "Operators: $+, -, *, /$",
+      "parentId": "basics",
+      "position": { "x": -250, "y": 200 },
+      "color": "#45B7D1",
+      "metadata": {
+        "youtubeLinks": [
+          { "url": "https://www.youtube.com/watch?v=v-Cs8sAMQIw" }
+        ]
+      }
+    },
+    {
+      "id": "control",
+      "title": "Control Flow",
+      "parentId": "root",
+      "position": { "x": 0, "y": 100 },
+      "color": "#4ECDC4",
+      "metadata": {
+        "youtubeLinks": []
+      }
+    },
+    {
+      "id": "control-if",
+      "title": "if-elif-else Statements",
+      "parentId": "control",
+      "position": { "x": -100, "y": 200 },
+      "color": "#45B7D1",
+      "metadata": {
+        "youtubeLinks": [
+          { "url": "https://www.youtube.com/watch?v=DZwmZ8Usvnk" }
+        ]
+      }
+    },
+    {
+      "id": "control-loops",
+      "title": "Loops: $for, while$",
+      "parentId": "control",
+      "position": { "x": 50, "y": 250 },
+      "color": "#45B7D1",
+      "metadata": {
+        "youtubeLinks": [
+          { "url": "https://www.youtube.com/watch?v=94UHEutL3d8" },
+          { "url": "https://www.youtube.com/watch?v=7xZZVt5Zx6o" }
+        ]
+      }
+    },
+    {
+      "id": "control-comprehension",
+      "title": "List Comprehension",
+      "parentId": "control",
+      "position": { "x": 100, "y": 180 },
+      "color": "#45B7D1",
+      "metadata": {
+        "youtubeLinks": [
+          { "url": "https://www.youtube.com/watch?v=DZwmZ8Usvnk" }
+        ]
+      }
+    },
+    {
+      "id": "functions",
+      "title": "Functions & OOP",
+      "parentId": "root",
+      "position": { "x": 400, "y": 100 },
+      "color": "#4ECDC4",
+      "metadata": {
+        "youtubeLinks": []
+      }
+    },
+    {
+      "id": "functions-basics",
+      "title": "Functions: $f(x) = y$",
+      "parentId": "functions",
+      "position": { "x": 300, "y": 200 },
+      "color": "#45B7D1",
+      "metadata": {
+        "youtubeLinks": [
+          { "url": "https://www.youtube.com/watch?v=9Os0o12WeWo" },
+          { "url": "https://www.youtube.com/watch?v=v2I8m0NP2Ks" }
+        ]
+      }
+    },
+    {
+      "id": "functions-lambdas",
+      "title": "Lambda Functions",
+      "parentId": "functions",
+      "position": { "x": 450, "y": 250 },
+      "color": "#45B7D1",
+      "metadata": {
+        "youtubeLinks": [
+          { "url": "https://www.youtube.com/watch?v=hYzwCHDtWEA" }
+        ]
+      }
+    },
+    {
+      "id": "oop-classes",
+      "title": "Classes & Objects",
+      "parentId": "functions",
+      "position": { "x": 550, "y": 200 },
+      "color": "#45B7D1",
+      "metadata": {
+        "youtubeLinks": [
+          { "url": "https://www.youtube.com/watch?v=ZDa-Z5JzDXo" },
+          { "url": "https://www.youtube.com/watch?v=apACNr7DC_s" }
+        ]
+      }
+    },
+    {
+      "id": "oop-inheritance",
+      "title": "Inheritance & Polymorphism",
+      "parentId": "functions",
+      "position": { "x": 600, "y": 280 },
+      "color": "#45B7D1",
+      "metadata": {
+        "youtubeLinks": [
+          { "url": "https://www.youtube.com/watch?v=RSl87lqOXQs" }
+        ]
+      }
+    },
+    {
+      "id": "advanced",
+      "title": "Advanced Topics",
+      "parentId": "root",
+      "position": { "x": 0, "y": 300 },
+      "color": "#FFE66D",
+      "metadata": {
+        "youtubeLinks": []
+      }
+    },
+    {
+      "id": "advanced-files",
+      "title": "File I/O & Exceptions",
+      "parentId": "advanced",
+      "position": { "x": -150, "y": 400 },
+      "color": "#FFC93C",
+      "metadata": {
+        "youtubeLinks": [
+          { "url": "https://www.youtube.com/watch?v=Uh2ebFW8OYM" },
+          { "url": "https://www.youtube.com/watch?v=NIWwJbo77Hs" }
+        ]
+      }
+    },
+    {
+      "id": "advanced-modules",
+      "title": "Modules & Packages",
+      "parentId": "advanced",
+      "position": { "x": 50, "y": 450 },
+      "color": "#FFC93C",
+      "metadata": {
+        "youtubeLinks": [
+          { "url": "https://www.youtube.com/watch?v=QgwQ7r9AwZE" }
+        ]
+      }
+    },
+    {
+      "id": "advanced-regex",
+      "title": "Regular Expressions: $\\w+@\\w+\\.com$",
+      "parentId": "advanced",
+      "position": { "x": 150, "y": 400 },
+      "color": "#FFC93C",
+      "metadata": {
+        "youtubeLinks": [
+          { "url": "https://www.youtube.com/watch?v=GyJtxl-nO9M" }
+        ]
+      }
+    },
+    {
+      "id": "libraries",
+      "title": "Popular Libraries",
+      "parentId": "root",
+      "position": { "x": 200, "y": 380 },
+      "color": "#A8E6CF",
+      "metadata": {
+        "youtubeLinks": []
+      }
+    },
+    {
+      "id": "lib-numpy",
+      "title": "NumPy: Numerical Computing",
+      "parentId": "libraries",
+      "position": { "x": 150, "y": 500 },
+      "color": "#56D8A8",
+      "metadata": {
+        "youtubeLinks": [
+          { "url": "https://www.youtube.com/watch?v=QUT1VHiUKyQ" },
+          { "url": "https://www.youtube.com/watch?v=xECXZ3tyONo" }
+        ]
+      }
+    },
+    {
+      "id": "lib-pandas",
+      "title": "Pandas: Data Analysis",
+      "parentId": "libraries",
+      "position": { "x": 280, "y": 540 },
+      "color": "#56D8A8",
+      "metadata": {
+        "youtubeLinks": [
+          { "url": "https://www.youtube.com/watch?v=vmEHCJofslg" },
+          { "url": "https://www.youtube.com/watch?v=N8ecLFVLvHo" }
+        ]
+      }
+    },
+    {
+      "id": "lib-flask",
+      "title": "Flask: Web Framework",
+      "parentId": "libraries",
+      "position": { "x": 350, "y": 480 },
+      "color": "#56D8A8",
+      "metadata": {
+        "youtubeLinks": [
+          { "url": "https://www.youtube.com/watch?v=Z1RJmh_OqeE" }
+        ]
+      }
+    },
+    {
+      "id": "projects",
+      "title": "Real-World Projects",
+      "parentId": "root",
+      "position": { "x": 300, "y": 300 },
+      "color": "#DDA0DD",
+      "metadata": {
+        "youtubeLinks": []
+      }
+    },
+    {
+      "id": "project-scraper",
+      "title": "Web Scraper with BeautifulSoup",
+      "parentId": "projects",
+      "position": { "x": 250, "y": 420 },
+      "color": "#DA70D6",
+      "metadata": {
+        "youtubeLinks": [
+          { "url": "https://www.youtube.com/watch?v=gRLHr664tXA" }
+        ]
+      }
+    },
+    {
+      "id": "project-api",
+      "title": "REST API with Flask",
+      "parentId": "projects",
+      "position": { "x": 380, "y": 430 },
+      "color": "#DA70D6",
+      "metadata": {
+        "youtubeLinks": [
+          { "url": "https://www.youtube.com/watch?v=Z1RJmh_OqeE" }
+        ]
+      }
+    },
+    {
+      "id": "project-ml",
+      "title": "Machine Learning with Scikit-learn",
+      "parentId": "projects",
+      "position": { "x": 480, "y": 390 },
+      "color": "#DA70D6",
+      "metadata": {
+        "youtubeLinks": [
+          { "url": "https://www.youtube.com/watch?v=N3C_6M0S0b8" },
+          { "url": "https://www.youtube.com/watch?v=0Lt9w-BxKFQ" }
+        ]
+      }
+    }
+  ],
+  "edges": [
+    { "id": "edge-root-basics", "from": "root", "to": "basics" },
+    { "id": "edge-root-control", "from": "root", "to": "control" },
+    { "id": "edge-root-functions", "from": "root", "to": "functions" },
+    { "id": "edge-root-advanced", "from": "root", "to": "advanced" },
+    { "id": "edge-root-libraries", "from": "root", "to": "libraries" },
+    { "id": "edge-root-projects", "from": "root", "to": "projects" },
+    { "id": "edge-basics-syntax", "from": "basics", "to": "basics-syntax" },
+    { "id": "edge-basics-types", "from": "basics", "to": "basics-types" },
+    { "id": "edge-basics-ops", "from": "basics", "to": "basics-ops" },
+    { "id": "edge-control-if", "from": "control", "to": "control-if" },
+    { "id": "edge-control-loops", "from": "control", "to": "control-loops" },
+    { "id": "edge-control-comprehension", "from": "control", "to": "control-comprehension" },
+    { "id": "edge-functions-basics", "from": "functions", "to": "functions-basics" },
+    { "id": "edge-functions-lambdas", "from": "functions", "to": "functions-lambdas" },
+    { "id": "edge-oop-classes", "from": "functions", "to": "oop-classes" },
+    { "id": "edge-oop-inheritance", "from": "functions", "to": "oop-inheritance" },
+    { "id": "edge-advanced-files", "from": "advanced", "to": "advanced-files" },
+    { "id": "edge-advanced-modules", "from": "advanced", "to": "advanced-modules" },
+    { "id": "edge-advanced-regex", "from": "advanced", "to": "advanced-regex" },
+    { "id": "edge-libraries-numpy", "from": "libraries", "to": "lib-numpy" },
+    { "id": "edge-libraries-pandas", "from": "libraries", "to": "lib-pandas" },
+    { "id": "edge-libraries-flask", "from": "libraries", "to": "lib-flask" },
+    { "id": "edge-projects-scraper", "from": "projects", "to": "project-scraper" },
+    { "id": "edge-projects-api", "from": "projects", "to": "project-api" },
+    { "id": "edge-projects-ml", "from": "projects", "to": "project-ml" },
+    { "id": "edge-control-to-functions", "from": "control", "to": "functions" },
+    { "id": "edge-functions-to-advanced", "from": "functions", "to": "advanced" },
+    { "id": "edge-advanced-to-libraries", "from": "advanced", "to": "libraries" },
+    { "id": "edge-libraries-to-projects", "from": "libraries", "to": "projects" }
+  ]
+}
