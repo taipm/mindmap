@@ -7,6 +7,8 @@ interface KeyboardShortcutsConfig {
   onOpen?: () => void;
   onUndo?: () => void;
   onRedo?: () => void;
+  onLayout?: () => void;
+  onShowHelp?: () => void;
 }
 
 export const useKeyboardShortcuts = (config: KeyboardShortcutsConfig) => {
@@ -45,6 +47,24 @@ export const useKeyboardShortcuts = (config: KeyboardShortcutsConfig) => {
           case 'y':
             e.preventDefault();
             config.onRedo?.();
+            break;
+          case 'l':
+            e.preventDefault();
+            config.onLayout?.();
+            break;
+          default:
+            break;
+        }
+      }
+
+      // Non-Ctrl shortcuts
+      if (!isInputElement) {
+        switch (e.key) {
+          case '?':
+            if (e.shiftKey) {
+              e.preventDefault();
+              config.onShowHelp?.();
+            }
             break;
           default:
             break;

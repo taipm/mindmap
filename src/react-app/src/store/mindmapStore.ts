@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { Node, Edge } from 'reactflow';
 
-interface MindmapNode {
+export interface MindmapNode {
   id: string;
   title: string;
   parentId: string | null;

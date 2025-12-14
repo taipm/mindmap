@@ -6,6 +6,8 @@ import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import Templates from './Templates';
 import SaveDialog from './SaveDialog';
 import SearchBar from './SearchBar';
+import LayoutSelector from './LayoutSelector';
+import ShortcutsHelp from './ShortcutsHelp';
 import './Toolbar.css';
 
 declare global {
@@ -26,6 +28,8 @@ export default function Toolbar() {
   const markTabAsSaved = useTabsStore((state) => state.markTabAsSaved);
   const activeTabId = useTabsStore((state) => state.activeTabId);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [showLayoutSelector, setShowLayoutSelector] = useState(false);
+  const [showShortcutsHelp, setShowShortcutsHelp] = useState(false);
 
   const handleNew = () => {
     // Save current tab state before creating new
@@ -273,6 +277,8 @@ export default function Toolbar() {
     },
     onUndo: handleUndo,
     onRedo: handleRedo,
+    onLayout: () => setShowLayoutSelector(true),
+    onShowHelp: () => setShowShortcutsHelp(true),
   });
 
   return (
@@ -282,6 +288,13 @@ export default function Toolbar() {
         defaultFilename={store.filename || store.generateFilename()}
         onSave={handleSaveConfirm}
         onCancel={() => setShowSaveDialog(false)}
+      />
+      {showLayoutSelector && (
+        <LayoutSelector onClose={() => setShowLayoutSelector(false)} />
+      )}
+      <ShortcutsHelp
+        isOpen={showShortcutsHelp}
+        onClose={() => setShowShortcutsHelp(false)}
       />
       <div className="toolbar">
         <div className="toolbar-section">
@@ -343,6 +356,17 @@ export default function Toolbar() {
         <div className="toolbar-section">
           <button
             type="button"
+            onClick={() => setShowLayoutSelector(true)}
+            className="toolbar-btn"
+            title="Auto-arrange nodes using layout algorithm"
+          >
+            🔄 Layout
+          </button>
+        </div>
+
+        <div className="toolbar-section">
+          <button
+            type="button"
             onClick={handleExportPNG}
             className="toolbar-btn"
             title="Export as PNG"
@@ -368,6 +392,14 @@ export default function Toolbar() {
         </div>
 
         <div className="toolbar-section">
+          <button
+            type="button"
+            onClick={() => setShowShortcutsHelp(true)}
+            className="toolbar-btn"
+            title="Show keyboard shortcuts (Shift+?)"
+          >
+            ⌨️ Help
+          </button>
           <button
             type="button"
             onClick={handleClear}
