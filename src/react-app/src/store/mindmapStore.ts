@@ -295,22 +295,32 @@ export const useMindmapStore = create<MindmapStore>((set, get) => {
   // Helper function to persist tab state to localStorage
   const persistTabState = () => {
     const state = get();
-    if (state.currentTabId) {
-      try {
-        const tabData = {
-          ...state.tabData,
-          [state.currentTabId]: {
-            nodes: state.nodes,
-            edges: state.edges,
-            history: state.history,
-            historyIndex: state.historyIndex,
-            filename: state.filename,
-          },
+    try {
+      const tabData = { ...state.tabData };
+
+      // If there's a current tab, save to it
+      if (state.currentTabId) {
+        tabData[state.currentTabId] = {
+          nodes: state.nodes,
+          edges: state.edges,
+          history: state.history,
+          historyIndex: state.historyIndex,
+          filename: state.filename,
         };
-        localStorage.setItem('mindmap_tab_data', JSON.stringify(tabData));
-      } catch (error) {
-        console.warn('Failed to save tab data:', error);
+      } else {
+        // Otherwise save to a default key for the current mindmap
+        tabData['__default__'] = {
+          nodes: state.nodes,
+          edges: state.edges,
+          history: state.history,
+          historyIndex: state.historyIndex,
+          filename: state.filename,
+        };
       }
+
+      localStorage.setItem('mindmap_tab_data', JSON.stringify(tabData));
+    } catch (error) {
+      console.warn('Failed to save tab data:', error);
     }
   };
 
@@ -327,21 +337,37 @@ export const useMindmapStore = create<MindmapStore>((set, get) => {
 
   // Load tab-specific mindmap data from localStorage
   let initialTabData: Record<string, TabMindmap> = {};
+  let defaultTabData: TabMindmap | null = null;
   try {
     const stored = localStorage.getItem('mindmap_tab_data');
     if (stored) {
       initialTabData = JSON.parse(stored);
+      // Extract default tab data if it exists
+      if (initialTabData['__default__']) {
+        defaultTabData = initialTabData['__default__'];
+        // Remove __default__ from tabData to keep it clean
+        delete initialTabData['__default__'];
+      }
     }
   } catch (error) {
     console.warn('Failed to load tab data from localStorage:', error);
   }
 
-  return {
+  // Use default tab data if available, otherwise use initial nodes
+  const initialState = defaultTabData || {
     nodes: initialNodes,
     edges: [],
     history: [{ nodes: initialNodes, edges: [] }],
     historyIndex: 0,
     filename: null,
+  };
+
+  return {
+    nodes: initialState.nodes,
+    edges: initialState.edges,
+    history: initialState.history,
+    historyIndex: initialState.historyIndex,
+    filename: initialState.filename,
     recentFiles: initialRecentFiles,
     tabData: initialTabData,
     currentTabId: null,
