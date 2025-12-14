@@ -75,15 +75,43 @@ export const useMindmapStore = create<MindmapStore>((set, get) => {
 
     addNode: (nodeData) => {
       const newId = `node-${Date.now()}`;
+
+      // Calculate child position based on parent
+      let childPosition = nodeData.position;
+      if (nodeData.parentId) {
+        const state = get();
+        const parent = state.nodes.find(n => n.id === nodeData.parentId);
+        if (parent) {
+          // Offset child to the side and below parent
+          const childCountForParent = state.nodes.filter(n => n.parentId === nodeData.parentId).length;
+          childPosition = {
+            x: parent.position.x + (childCountForParent % 2 === 0 ? 200 : -200),
+            y: parent.position.y + 150,
+          };
+        }
+      }
+
       const newNode: MindmapNode = {
         ...nodeData,
         id: newId,
+        position: childPosition,
         color: nodeData.color || COLORS[Math.floor(Math.random() * COLORS.length)],
       };
 
-      set((state) => ({
-        nodes: [...state.nodes, newNode],
-      }));
+      set((state) => {
+        const newEdges = nodeData.parentId
+          ? [...state.edges, {
+              id: `edge-${nodeData.parentId}-${newId}`,
+              from: nodeData.parentId,
+              to: newId,
+            }]
+          : state.edges;
+
+        return {
+          nodes: [...state.nodes, newNode],
+          edges: newEdges,
+        };
+      });
 
       get().pushHistory();
       return newId;

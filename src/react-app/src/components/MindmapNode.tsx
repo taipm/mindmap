@@ -23,11 +23,12 @@ export default function MindmapNode({ data, id, selected }: MindmapNodeProps) {
     }
   };
 
-  const handleAddChild = () => {
+  const handleAddChild = (e: React.MouseEvent) => {
+    e.stopPropagation();
     addNode({
       title: 'New Node',
       parentId: id,
-      position: { x: 0, y: 0 },
+      position: { x: 0, y: 0 }, // Will be calculated by store
       color: '#4ECDC4',
     });
   };
