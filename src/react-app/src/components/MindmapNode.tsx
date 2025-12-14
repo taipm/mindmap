@@ -4,6 +4,7 @@ import { Handle, Position } from 'reactflow';
 import { useMindmapStore } from '../store/mindmapStore';
 import { useTabsStore } from '../store/tabsStore';
 import NodeContextMenu from './NodeContextMenu';
+import LaTeXEditor from './LaTeXEditor';
 import './MindmapNode.css';
 
 interface MindmapNodeProps {
@@ -16,6 +17,8 @@ export default function MindmapNode({ data, id, selected }: MindmapNodeProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(data.label);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
+  const [showLatexEditor, setShowLatexEditor] = useState(false);
+  const nodes = useMindmapStore((state) => state.nodes);
   const updateNode = useMindmapStore((state) => state.updateNode);
   const deleteNode = useMindmapStore((state) => state.deleteNode);
   const addNode = useMindmapStore((state) => state.addNode);
@@ -24,6 +27,9 @@ export default function MindmapNode({ data, id, selected }: MindmapNodeProps) {
   const markTabAsUnsaved = useTabsStore((state) => state.markTabAsUnsaved);
   const highlightedNodeIds = useMindmapStore((state) => state.highlightedNodeIds);
   const searchQuery = useMindmapStore((state) => state.searchQuery);
+
+  const currentNode = nodes.find((n) => n.id === id);
+  const latexContent = currentNode?.metadata?.latex || '';
 
   const isHighlighted = highlightedNodeIds.includes(id);
   const isMatched = searchQuery && highlightedNodeIds.length > 0 && isHighlighted;
@@ -84,8 +90,31 @@ export default function MindmapNode({ data, id, selected }: MindmapNodeProps) {
     setIsEditing(true);
   };
 
+  const handleSaveLatex = (latex: string) => {
+    updateNode(id, {
+      metadata: {
+        ...currentNode?.metadata,
+        latex
+      }
+    });
+    if (activeTabId) {
+      markTabAsUnsaved(activeTabId);
+    }
+  };
+
   return (
     <>
+      {showLatexEditor &&
+        createPortal(
+          <LaTeXEditor
+            nodeId={id}
+            nodeTitle={data.label}
+            latexContent={latexContent}
+            onSave={handleSaveLatex}
+            onClose={() => setShowLatexEditor(false)}
+          />,
+          document.body
+        )}
       {contextMenu &&
         createPortal(
           <NodeContextMenu
@@ -139,6 +168,14 @@ export default function MindmapNode({ data, id, selected }: MindmapNodeProps) {
           title="Add child node"
         >
           +
+        </button>
+        <button
+          type="button"
+          className="node-btn latex-btn"
+          onClick={() => setShowLatexEditor(true)}
+          title="Edit LaTeX formula"
+        >
+          ∑
         </button>
         {id !== 'root' && (
           <>
