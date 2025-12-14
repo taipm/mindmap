@@ -1,7 +1,5 @@
-import React, { useCallback, useRef, useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import ReactFlow, {
-  Node,
-  Edge,
   addEdge,
   Connection,
   useNodesState,
@@ -22,15 +20,16 @@ const nodeTypes = {
 
 function App() {
   const store = useMindmapStore();
-  const [nodes, setNodes, onNodesChange] = useNodesState(store.getInitialNodes());
+  const [nodes, , onNodesChange] = useNodesState(store.getInitialNodes());
   const [edges, setEdges, onEdgesChange] = useEdgesState(store.getInitialEdges());
 
   const onConnect = useCallback(
     (connection: Connection) => {
       const newEdges = addEdge(connection, edges);
       setEdges(newEdges);
+      const edgeId = `edge-${connection.source}-${connection.target}-${Date.now()}`;
       store.addEdge({
-        id: connection.id || `edge-${Date.now()}`,
+        id: edgeId,
         from: connection.source || '',
         to: connection.target || '',
       });
