@@ -1,0 +1,11 @@
+node_modules/
+dist/
+build/
+.env
+.env.local
+*.log
+.DS_Store
+src/react-app/build/
+src/react-app/node_modules/
+.cache/
+out/

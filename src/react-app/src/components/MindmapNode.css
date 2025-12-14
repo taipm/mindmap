@@ -1,0 +1,92 @@
+.mindmap-node {
+  padding: 15px;
+  border-radius: 8px;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  min-width: 120px;
+  max-width: 180px;
+  cursor: move;
+  transition: all 0.2s ease;
+  color: white;
+  font-weight: 500;
+  text-align: center;
+}
+
+.mindmap-node:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transform: scale(1.05);
+}
+
+.mindmap-node.selected {
+  border-color: #222;
+  border-width: 3px;
+}
+
+.node-label {
+  padding: 5px 0;
+  cursor: pointer;
+  word-wrap: break-word;
+  font-size: 14px;
+  min-height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.node-edit input {
+  width: 100%;
+  border: none;
+  background: rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 5px;
+  border-radius: 4px;
+  font-size: 14px;
+  text-align: center;
+  font-weight: 500;
+}
+
+.node-edit input:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.node-actions {
+  display: flex;
+  gap: 5px;
+  margin-top: 8px;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.mindmap-node:hover .node-actions {
+  opacity: 1;
+}
+
+.node-btn {
+  padding: 4px 8px;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: white;
+  font-weight: bold;
+}
+
+.add-btn {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.add-btn:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.delete-btn {
+  background-color: rgba(255, 0, 0, 0.4);
+}
+
+.delete-btn:hover {
+  background-color: rgba(255, 0, 0, 0.6);
+}

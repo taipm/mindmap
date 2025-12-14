@@ -1,0 +1,13 @@
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #fff;
+}
+
+.mindmap-editor {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  background-color: #fafafa;
+}
