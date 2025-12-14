@@ -297,34 +297,23 @@ export const useMindmapStore = create<MindmapStore>((set, get) => {
     const state = get();
     try {
       const tabData = { ...state.tabData };
+      const stateSnapshot = {
+        nodes: state.nodes,
+        edges: state.edges,
+        history: state.history,
+        historyIndex: state.historyIndex,
+        filename: state.filename,
+      };
 
-      // If there's a current tab, save to it
+      // Always save to __default__ as the source of truth
+      tabData['__default__'] = stateSnapshot;
+
+      // If there's a current tab, also save to it
       if (state.currentTabId) {
-        tabData[state.currentTabId] = {
-          nodes: state.nodes,
-          edges: state.edges,
-          history: state.history,
-          historyIndex: state.historyIndex,
-          filename: state.filename,
-        };
-      } else {
-        // Otherwise save to a default key for the current mindmap
-        tabData['__default__'] = {
-          nodes: state.nodes,
-          edges: state.edges,
-          history: state.history,
-          historyIndex: state.historyIndex,
-          filename: state.filename,
-        };
+        tabData[state.currentTabId] = stateSnapshot;
       }
 
       localStorage.setItem('mindmap_tab_data', JSON.stringify(tabData));
-      console.log('[persistTabState]', {
-        currentTabId: state.currentTabId,
-        nodeCount: state.nodes.length,
-        savedTo: state.currentTabId || '__default__',
-        firstNodeMetadata: state.nodes[0]?.metadata,
-      });
     } catch (error) {
       console.warn('Failed to save tab data:', error);
     }
@@ -521,12 +510,10 @@ export const useMindmapStore = create<MindmapStore>((set, get) => {
     },
 
     updateNode: (id, updates) => {
-      console.log('[updateNode] called with:', { id, updates });
       set((state) => ({
         nodes: state.nodes.map((node) => {
           if (node.id === id) {
             const updated = { ...node, ...updates };
-            console.log('[updateNode] updated node:', { id, updated });
             return updated;
           }
           return node;

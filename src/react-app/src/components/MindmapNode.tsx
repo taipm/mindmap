@@ -4,11 +4,11 @@ import { Handle, Position } from 'reactflow';
 import { useMindmapStore } from '../store/mindmapStore';
 import { useTabsStore } from '../store/tabsStore';
 import NodeContextMenu from './NodeContextMenu';
-import LaTeXEditor from './LaTeXEditor';
+import LaTeXRenderer from './LaTeXRenderer';
 import './MindmapNode.css';
 
 interface MindmapNodeProps {
-  data: { label: string; color: string };
+  data: { label: string; color: string; metadata?: Record<string, any> };
   id: string;
   selected?: boolean;
 }
@@ -16,8 +16,8 @@ interface MindmapNodeProps {
 export default function MindmapNode({ data, id, selected }: MindmapNodeProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(data.label);
+  const [latex, setLatex] = useState('');
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
-  const [showLatexEditor, setShowLatexEditor] = useState(false);
   const nodes = useMindmapStore((state) => state.nodes);
   const updateNode = useMindmapStore((state) => state.updateNode);
   const deleteNode = useMindmapStore((state) => state.deleteNode);
@@ -36,12 +36,25 @@ export default function MindmapNode({ data, id, selected }: MindmapNodeProps) {
 
   const handleSave = () => {
     if (title.trim()) {
-      updateNode(id, { title });
+      const updatedMetadata = {
+        ...currentNode?.metadata,
+        ...(latex.trim() && { latex }),
+      };
+      updateNode(id, {
+        title,
+        ...(Object.keys(updatedMetadata).length > 0 && { metadata: updatedMetadata }),
+      });
       if (activeTabId) {
         markTabAsUnsaved(activeTabId);
       }
       setIsEditing(false);
+      setLatex('');
     }
+  };
+
+  const handleEditStart = () => {
+    setLatex(latexContent);
+    setIsEditing(true);
   };
 
   const handleAddChild = (e?: React.MouseEvent) => {
@@ -87,42 +100,12 @@ export default function MindmapNode({ data, id, selected }: MindmapNodeProps) {
   };
 
   const handleEditFromContext = () => {
+    setLatex(latexContent);
     setIsEditing(true);
-  };
-
-  const handleSaveLatex = (latex: string) => {
-    console.log('[MindmapNode.handleSaveLatex]', {
-      nodeId: id,
-      nodeTitle: data.label,
-      latex,
-      currentNodeMetadata: currentNode?.metadata,
-    });
-    const updatedMetadata = {
-      ...currentNode?.metadata,
-      latex
-    };
-    console.log('[MindmapNode.handleSaveLatex] updatedMetadata:', updatedMetadata);
-    updateNode(id, {
-      metadata: updatedMetadata
-    });
-    if (activeTabId) {
-      markTabAsUnsaved(activeTabId);
-    }
   };
 
   return (
     <>
-      {showLatexEditor &&
-        createPortal(
-          <LaTeXEditor
-            nodeId={id}
-            nodeTitle={data.label}
-            latexContent={latexContent}
-            onSave={handleSaveLatex}
-            onClose={() => setShowLatexEditor(false)}
-          />,
-          document.body
-        )}
       {contextMenu &&
         createPortal(
           <NodeContextMenu
@@ -154,17 +137,37 @@ export default function MindmapNode({ data, id, selected }: MindmapNodeProps) {
             onBlur={handleSave}
             onKeyDown={(e) => {
               if (e.key === 'Enter') handleSave();
-              if (e.key === 'Escape') setIsEditing(false);
+              if (e.key === 'Escape') {
+                setIsEditing(false);
+                setLatex('');
+              }
             }}
+            placeholder="Node title"
             autoFocus
+          />
+          <input
+            type="text"
+            value={latex}
+            onChange={(e) => setLatex(e.target.value)}
+            onBlur={handleSave}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleSave();
+              if (e.key === 'Escape') {
+                setIsEditing(false);
+                setLatex('');
+              }
+            }}
+            placeholder="LaTeX formula (optional)"
+            className="node-edit-latex"
           />
         </div>
       ) : (
         <div
           className="node-label"
-          onDoubleClick={() => setIsEditing(true)}
+          onDoubleClick={() => handleEditStart()}
         >
           {data.label}
+          {latexContent && <LaTeXRenderer latex={latexContent} />}
         </div>
       )}
 
@@ -176,14 +179,6 @@ export default function MindmapNode({ data, id, selected }: MindmapNodeProps) {
           title="Add child node"
         >
           +
-        </button>
-        <button
-          type="button"
-          className="node-btn latex-btn"
-          onClick={() => setShowLatexEditor(true)}
-          title="Edit LaTeX formula"
-        >
-          ∑
         </button>
         {id !== 'root' && (
           <>

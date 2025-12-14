@@ -13,6 +13,7 @@
     "@types/react-dom": "^19.2.3",
     "electron-is-dev": "^3.0.1",
     "html2canvas": "^1.4.1",
+    "katex": "^0.16.27",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-scripts": "5.0.1",
@@ -44,5 +45,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/katex": "^0.16.7"
   }
 }

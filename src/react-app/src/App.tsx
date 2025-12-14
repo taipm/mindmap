@@ -37,7 +37,7 @@ function App() {
   // Initialize with store's current state
   const initialNodes = storeNodes.map((node) => ({
     id: node.id,
-    data: { label: node.title, color: node.color },
+    data: { label: node.title, color: node.color, metadata: node.metadata },
     position: node.position,
     type: 'mindmapNode',
   })) as any[];
@@ -77,7 +77,7 @@ function App() {
   useEffect(() => {
     const rfNodes = storeNodes.map((node) => ({
       id: node.id,
-      data: { label: node.title, color: node.color },
+      data: { label: node.title, color: node.color, metadata: node.metadata },
       position: node.position,
       type: 'mindmapNode',
     }));

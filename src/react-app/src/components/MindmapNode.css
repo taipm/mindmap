@@ -35,6 +35,13 @@
   line-height: 1.3;
 }
 
+.node-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
 .node-edit input {
   width: 100%;
   border: none;
@@ -50,6 +57,13 @@
 .node-edit input:focus {
   outline: none;
   background: rgba(255, 255, 255, 0.5);
+}
+
+.node-edit-latex {
+  font-size: 12px !important;
+  font-weight: 400 !important;
+  font-family: 'Courier New', monospace !important;
+  background: rgba(255, 255, 255, 0.15) !important;
 }
 
 .node-actions {
