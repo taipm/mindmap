@@ -6,6 +6,7 @@ import { useTabsStore } from '../store/tabsStore';
 import NodeContextMenu from './NodeContextMenu';
 import LaTeXRenderer from './LaTeXRenderer';
 import YouTubeModal from './YouTubeModal';
+import NodeMetadataIndicators from './NodeMetadataIndicators';
 import './MindmapNode.css';
 
 interface MindmapNodeProps {
@@ -178,18 +179,21 @@ export default function MindmapNode({ data, id, selected }: MindmapNodeProps) {
           />
         </div>
       ) : (
-        <div
-          className="node-label"
-          onDoubleClick={() => handleEditStart()}
-        >
-          {titleParts.map((part, idx) =>
-            part.type === 'latex' ? (
-              <LaTeXRenderer key={idx} latex={part.content} />
-            ) : (
-              <span key={idx}>{part.content}</span>
-            )
-          )}
-        </div>
+        <>
+          <div
+            className="node-label"
+            onDoubleClick={() => handleEditStart()}
+          >
+            {titleParts.map((part, idx) =>
+              part.type === 'latex' ? (
+                <LaTeXRenderer key={idx} latex={part.content} />
+              ) : (
+                <span key={idx}>{part.content}</span>
+              )
+            )}
+          </div>
+          <NodeMetadataIndicators title={title} metadata={data.metadata} />
+        </>
       )}
 
       <div className="node-actions">
