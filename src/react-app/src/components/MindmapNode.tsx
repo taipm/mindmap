@@ -91,11 +91,12 @@ export default function MindmapNode({ data, id, selected }: MindmapNodeProps) {
   };
 
   const handleSaveLatex = (latex: string) => {
+    const updatedMetadata = {
+      ...currentNode?.metadata,
+      latex
+    };
     updateNode(id, {
-      metadata: {
-        ...currentNode?.metadata,
-        latex
-      }
+      metadata: updatedMetadata
     });
     if (activeTabId) {
       markTabAsUnsaved(activeTabId);

@@ -292,6 +292,28 @@ export const useMindmapStore = create<MindmapStore>((set, get) => {
     return Array.from(highlighted);
   };
 
+  // Helper function to persist tab state to localStorage
+  const persistTabState = () => {
+    const state = get();
+    if (state.currentTabId) {
+      try {
+        const tabData = {
+          ...state.tabData,
+          [state.currentTabId]: {
+            nodes: state.nodes,
+            edges: state.edges,
+            history: state.history,
+            historyIndex: state.historyIndex,
+            filename: state.filename,
+          },
+        };
+        localStorage.setItem('mindmap_tab_data', JSON.stringify(tabData));
+      } catch (error) {
+        console.warn('Failed to save tab data:', error);
+      }
+    }
+  };
+
   // Load recent files from localStorage
   let initialRecentFiles: RecentFile[] = [];
   try {
@@ -462,6 +484,7 @@ export const useMindmapStore = create<MindmapStore>((set, get) => {
       });
 
       get().pushHistory();
+      persistTabState();
       return newId;
     },
 
@@ -470,6 +493,7 @@ export const useMindmapStore = create<MindmapStore>((set, get) => {
         nodes: state.nodes.map((node) => (node.id === id ? { ...node, ...updates } : node)),
       }));
       get().pushHistory();
+      persistTabState();
     },
 
     deleteNode: (id) => {
@@ -478,6 +502,7 @@ export const useMindmapStore = create<MindmapStore>((set, get) => {
         edges: state.edges.filter((edge) => edge.from !== id && edge.to !== id),
       }));
       get().pushHistory();
+      persistTabState();
     },
 
     addEdge: (edge) => {
