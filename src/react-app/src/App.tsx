@@ -12,6 +12,7 @@ import 'reactflow/dist/style.css';
 import { useMindmapStore } from './store/mindmapStore';
 import MindmapNode from './components/MindmapNode';
 import Toolbar from './components/Toolbar';
+import RecentFiles from './components/RecentFiles';
 import './App.css';
 
 const nodeTypes = {
@@ -83,19 +84,22 @@ function App() {
   return (
     <div className="app-container">
       <Toolbar />
-      <div className="mindmap-editor">
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChangeLocal}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          nodeTypes={nodeTypes}
-        >
-          <Background />
-          <Controls />
-          <MiniMap />
-        </ReactFlow>
+      <div className="app-content">
+        <RecentFiles />
+        <div className="mindmap-editor">
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChangeLocal}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            nodeTypes={nodeTypes}
+          >
+            <Background />
+            <Controls />
+            <MiniMap />
+          </ReactFlow>
+        </div>
       </div>
     </div>
   );

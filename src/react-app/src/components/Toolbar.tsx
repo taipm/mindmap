@@ -22,6 +22,9 @@ export default function Toolbar() {
       const filename = store.filename || store.generateFilename();
       const jsonData = store.saveFile(filename);
 
+      // Add to recent files
+      store.addRecentFile(filename);
+
       if (!(globalThis as any).electronAPI) {
         // Fallback for development mode
         const blob = new Blob([jsonData], { type: 'application/json' });

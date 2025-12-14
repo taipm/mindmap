@@ -22,12 +22,20 @@ interface HistoryEntry {
   edges: MindmapEdge[];
 }
 
+interface RecentFile {
+  filename: string;
+  timestamp: number;
+  lastModified: string;
+  nodeCount: number;
+}
+
 interface MindmapStore {
   nodes: MindmapNode[];
   edges: MindmapEdge[];
   history: HistoryEntry[];
   historyIndex: number;
   filename: string | null;
+  recentFiles: RecentFile[];
 
   // CRUD operations
   addNode: (node: Omit<MindmapNode, 'id'>) => string;
@@ -60,6 +68,11 @@ interface MindmapStore {
 
   // Smart filename
   generateFilename: (templateName?: string) => string;
+
+  // Recent files
+  addRecentFile: (filename: string) => void;
+  getRecentFiles: () => RecentFile[];
+  clearRecentFiles: () => void;
 }
 
 const COLORS = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE'];
@@ -126,12 +139,24 @@ export const useMindmapStore = create<MindmapStore>((set, get) => {
     },
   ];
 
+  // Load recent files from localStorage
+  let initialRecentFiles: RecentFile[] = [];
+  try {
+    const stored = localStorage.getItem('mindmap_recent_files');
+    if (stored) {
+      initialRecentFiles = JSON.parse(stored);
+    }
+  } catch (error) {
+    console.warn('Failed to load recent files from localStorage:', error);
+  }
+
   return {
     nodes: initialNodes,
     edges: [],
     history: [{ nodes: initialNodes, edges: [] }],
     historyIndex: 0,
     filename: null,
+    recentFiles: initialRecentFiles,
 
     addNode: (nodeData) => {
       const newId = `node-${Date.now()}`;
@@ -410,6 +435,47 @@ export const useMindmapStore = create<MindmapStore>((set, get) => {
       }
 
       return `mindmap_${date}_${time}`;
+    },
+
+    addRecentFile: (filename: string) => {
+      const now = new Date();
+      const state = get();
+
+      // Remove if already exists (to avoid duplicates)
+      const filtered = state.recentFiles.filter((f) => f.filename !== filename);
+
+      // Create new recent file entry
+      const newRecentFile: RecentFile = {
+        filename,
+        timestamp: Date.now(),
+        lastModified: now.toLocaleString('vi-VN'),
+        nodeCount: state.nodes.length,
+      };
+
+      // Add to beginning and keep only 10 most recent
+      const updated = [newRecentFile, ...filtered].slice(0, 10);
+      set({ recentFiles: updated });
+
+      // Save to localStorage for persistence
+      try {
+        localStorage.setItem('mindmap_recent_files', JSON.stringify(updated));
+      } catch (error) {
+        console.warn('Failed to save recent files to localStorage:', error);
+      }
+    },
+
+    getRecentFiles: () => {
+      const state = get();
+      return state.recentFiles;
+    },
+
+    clearRecentFiles: () => {
+      set({ recentFiles: [] });
+      try {
+        localStorage.removeItem('mindmap_recent_files');
+      } catch (error) {
+        console.warn('Failed to clear recent files from localStorage:', error);
+      }
     },
   };
 });

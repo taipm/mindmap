@@ -5,6 +5,13 @@
   background-color: #fff;
 }
 
+.app-content {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  background-color: #fafafa;
+}
+
 .mindmap-editor {
   flex: 1;
   display: flex;
