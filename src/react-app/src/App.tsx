@@ -20,8 +20,32 @@ const nodeTypes = {
 
 function App() {
   const store = useMindmapStore();
-  const [nodes, , onNodesChange] = useNodesState(store.getInitialNodes());
+  const storeNodes = useMindmapStore((state) => state.nodes);
+  const storeEdges = useMindmapStore((state) => state.edges);
+  const [nodes, setNodes, onNodesChange] = useNodesState(store.getInitialNodes());
   const [edges, setEdges, onEdgesChange] = useEdgesState(store.getInitialEdges());
+
+  // Sync store changes to React state
+  useEffect(() => {
+    const rfNodes = storeNodes.map((node) => ({
+      id: node.id,
+      data: { label: node.title, color: node.color },
+      position: node.position,
+      type: 'mindmapNode',
+    }));
+    setNodes(rfNodes);
+  }, [storeNodes, setNodes]);
+
+  // Sync store edges to React state
+  useEffect(() => {
+    const rfEdges = storeEdges.map((edge) => ({
+      id: edge.id,
+      source: edge.from,
+      target: edge.to,
+      label: edge.label,
+    }));
+    setEdges(rfEdges);
+  }, [storeEdges, setEdges]);
 
   const onConnect = useCallback(
     (connection: Connection) => {
