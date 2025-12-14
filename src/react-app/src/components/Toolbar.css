@@ -3,9 +3,9 @@
   align-items: center;
   gap: 20px;
   padding: 12px 20px;
-  background-color: #f5f5f5;
-  border-bottom: 2px solid #e0e0e0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
 }
 
 .toolbar-section {
@@ -17,38 +17,45 @@
 .toolbar-section h1 {
   margin: 0;
   font-size: 18px;
-  font-weight: 600;
-  color: #333;
+  font-weight: 700;
+  color: #1e293b;
+  background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .toolbar-btn {
-  padding: 8px 12px;
-  border: 1px solid #ddd;
+  padding: 8px 14px;
+  border: 1px solid #cbd5e1;
   background-color: white;
-  color: #333;
-  border-radius: 5px;
+  color: #334155;
+  border-radius: 6px;
   cursor: pointer;
   font-size: 13px;
   font-weight: 500;
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .toolbar-btn:hover {
-  background-color: #e8e8e8;
-  border-color: #999;
-  transform: translateY(-1px);
+  background-color: #f1f5f9;
+  border-color: #94a3b8;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .toolbar-btn:active {
-  transform: translateY(0);
+  transform: scale(0.98);
 }
 
 .toolbar-btn.danger {
-  color: #c33;
-  border-color: #fcc;
+  color: #dc2626;
+  border-color: #fecaca;
 }
 
 .toolbar-btn.danger:hover {
-  background-color: #fcc;
-  border-color: #999;
+  background-color: #fee2e2;
+  border-color: #fca5a5;
 }
