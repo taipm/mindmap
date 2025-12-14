@@ -73,6 +73,19 @@ function App() {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, []);
 
+  // Auto-save every 30 seconds if file has been saved before
+  useEffect(() => {
+    const autoSaveInterval = setInterval(() => {
+      const state = useMindmapStore.getState();
+      // Only auto-save if we have a file path and it's been more than 5 seconds since last save
+      if (state.filePath && Date.now() - state.lastAutoSaveTime > 5000) {
+        state.autoSave();
+      }
+    }, 30000); // Auto-save every 30 seconds
+
+    return () => clearInterval(autoSaveInterval);
+  }, []);
+
   // Sync store changes to React state
   useEffect(() => {
     const rfNodes = storeNodes.map((node) => ({

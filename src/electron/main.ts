@@ -45,6 +45,15 @@ ipcMain.handle('save-file', async (_event, filename: string, content: string) =>
   }
 });
 
+ipcMain.handle('save-file-to-path', async (_event, filePath: string, content: string) => {
+  try {
+    await writeFile(filePath, content, 'utf-8');
+    return { success: true, path: filePath };
+  } catch (error) {
+    return { success: false, error: (error as Error).message };
+  }
+});
+
 ipcMain.handle('open-file', async () => {
   try {
     const result = await dialog.showOpenDialog(mainWindow!, {

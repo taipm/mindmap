@@ -43,11 +43,13 @@ interface MindmapStore {
   history: HistoryEntry[];
   historyIndex: number;
   filename: string | null;
+  filePath: string | null; // Full file path for overwrite operations
   recentFiles: RecentFile[];
   tabData: Record<string, TabMindmap>;
   currentTabId: string | null;
   searchQuery: string;
   highlightedNodeIds: string[];
+  lastAutoSaveTime: number; // Timestamp of last auto-save
 
   // Tab context management
   setCurrentTab: (tabId: string) => void;
@@ -72,6 +74,8 @@ interface MindmapStore {
 
   // File operations
   saveFile: (filename: string) => string;
+  saveFileToPath: (path: string) => string; // Save to specific path (for overwrite)
+  autoSave: () => void; // Auto-save to current file path if available
   loadFile: (data: string) => void;
   loadFileFromStorage: (filename: string) => boolean;
   clear: () => void;
@@ -363,11 +367,13 @@ export const useMindmapStore = create<MindmapStore>((set, get) => {
     history: initialState.history,
     historyIndex: initialState.historyIndex,
     filename: initialState.filename,
+    filePath: null, // Will be set when user saves to a file
     recentFiles: initialRecentFiles,
     tabData: initialTabData,
     currentTabId: null,
     searchQuery: '',
     highlightedNodeIds: [],
+    lastAutoSaveTime: 0,
 
     setCurrentTab: (tabId: string) => {
       set((state) => {
@@ -610,8 +616,64 @@ export const useMindmapStore = create<MindmapStore>((set, get) => {
         console.warn('Failed to save file to localStorage:', error);
       }
 
-      set({ filename });
+      set({ filename, filePath: `${filename}.json` });
       return JSON.stringify(data, null, 2);
+    },
+
+    saveFileToPath: (path: string) => {
+      const state = get();
+      const filename = path.replace(/\.json$/, '').split(/[\\/]/).pop() || 'mindmap';
+      const data = {
+        id: `mindmap-${Date.now()}`,
+        title: filename,
+        version: 1,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        owner: 'local',
+        permissions: [],
+        nodes: state.nodes,
+        edges: state.edges,
+      };
+
+      // Save to localStorage for recent files functionality
+      try {
+        localStorage.setItem(`mindmap_file_${filename}`, JSON.stringify(data));
+      } catch (error) {
+        console.warn('Failed to save file to localStorage:', error);
+      }
+
+      // Store the full path for future overwrite operations
+      set({ filename, filePath: path, lastAutoSaveTime: Date.now() });
+      return JSON.stringify(data, null, 2);
+    },
+
+    autoSave: () => {
+      const state = get();
+      // Only auto-save if we have a file path and there have been changes
+      if (!state.filePath) return;
+
+      const data = {
+        id: `mindmap-${Date.now()}`,
+        title: state.filename || 'mindmap',
+        version: 1,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        owner: 'local',
+        permissions: [],
+        nodes: state.nodes,
+        edges: state.edges,
+      };
+
+      // Save to localStorage
+      try {
+        if (state.filename) {
+          localStorage.setItem(`mindmap_file_${state.filename}`, JSON.stringify(data));
+        }
+      } catch (error) {
+        console.warn('Failed to auto-save to localStorage:', error);
+      }
+
+      set({ lastAutoSaveTime: Date.now() });
     },
 
     loadFile: (data) => {

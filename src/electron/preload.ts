@@ -4,6 +4,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   saveFile: (filename: string, content: string) =>
     ipcRenderer.invoke('save-file', filename, content),
 
+  saveFileToPath: (filePath: string, content: string) =>
+    ipcRenderer.invoke('save-file-to-path', filePath, content),
+
   openFile: () =>
     ipcRenderer.invoke('open-file'),
 

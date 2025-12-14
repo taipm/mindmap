@@ -12,6 +12,7 @@ declare global {
   interface Window {
     electronAPI: {
       saveFile: (filename: string, content: string) => Promise<{ success: boolean; path?: string; error?: string }>;
+      saveFileToPath: (filePath: string, content: string) => Promise<{ success: boolean; path?: string; error?: string }>;
       openFile: () => Promise<{ success: boolean; content?: string; path?: string; error?: string }>;
       exportImage: (filename: string, dataUrl: string, format: 'png' | 'svg') => Promise<{ success: boolean; path?: string; error?: string }>;
     };
@@ -44,7 +45,40 @@ export default function Toolbar() {
   };
 
   const handleSaveClick = () => {
-    setShowSaveDialog(true);
+    const filePath = store.filePath;
+    // If file was already saved, overwrite it. Otherwise show save dialog
+    if (filePath) {
+      handleSaveToExistingPath(filePath);
+    } else {
+      setShowSaveDialog(true);
+    }
+  };
+
+  const handleSaveToExistingPath = async (filePath: string) => {
+    try {
+      const jsonData = store.saveFileToPath(filePath);
+
+      if (!(globalThis as any).electronAPI) {
+        // Fallback for development mode
+        const blob = new Blob([jsonData], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filePath.split(/[\\/]/).pop() || 'mindmap.json';
+        a.click();
+        URL.revokeObjectURL(url);
+        alert(`Saved to: ${filePath} (development mode)`);
+        return;
+      }
+
+      const result = await (globalThis as any).electronAPI.saveFileToPath(filePath, jsonData);
+
+      if (result.success) {
+        console.log(`Auto-saved to: ${filePath}`);
+      }
+    } catch (error) {
+      console.error('Save error:', error);
+    }
   };
 
   const handleSaveConfirm = async (filename: string) => {
@@ -78,6 +112,8 @@ export default function Toolbar() {
 
       if (result.success) {
         setShowSaveDialog(false);
+        // Store the path returned by Electron for future overwrites
+        store.saveFileToPath(result.path || `${filename}.json`);
         alert(`Saved to: ${result.path}`);
       }
     } catch (error) {
@@ -109,6 +145,10 @@ export default function Toolbar() {
 
       if (result.success && result.content) {
         store.loadFile(result.content);
+        // Set the file path for future saves
+        if (result.path) {
+          store.saveFileToPath(result.path);
+        }
         alert('File loaded successfully');
       }
     } catch (error) {
