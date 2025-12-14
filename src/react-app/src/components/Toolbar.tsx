@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import html2canvas from 'html2canvas';
 import { useMindmapStore } from '../store/mindmapStore';
 import Templates from './Templates';
+import SaveDialog from './SaveDialog';
 import './Toolbar.css';
 
 declare global {
@@ -16,10 +17,14 @@ declare global {
 
 export default function Toolbar() {
   const store = useMindmapStore();
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
 
-  const handleSave = async () => {
+  const handleSaveClick = () => {
+    setShowSaveDialog(true);
+  };
+
+  const handleSaveConfirm = async (filename: string) => {
     try {
-      const filename = store.filename || store.generateFilename();
       const jsonData = store.saveFile(filename);
 
       // Add to recent files
@@ -31,16 +36,18 @@ export default function Toolbar() {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'mindmap.json';
+        a.download = `${filename}.json`;
         a.click();
         URL.revokeObjectURL(url);
-        alert('Saved as mindmap.json (development mode)');
+        setShowSaveDialog(false);
+        alert(`Saved as ${filename}.json (development mode)`);
         return;
       }
 
-      const result = await (globalThis as any).electronAPI.saveFile('mindmap.json', jsonData);
+      const result = await (globalThis as any).electronAPI.saveFile(`${filename}.json`, jsonData);
 
       if (result.success) {
+        setShowSaveDialog(false);
         alert(`Saved to: ${result.path}`);
       }
     } catch (error) {
@@ -181,90 +188,98 @@ export default function Toolbar() {
   };
 
   return (
-    <div className="toolbar">
-      <div className="toolbar-section">
-        <h1>Mindmap Editor</h1>
-      </div>
+    <>
+      <SaveDialog
+        isOpen={showSaveDialog}
+        defaultFilename={store.filename || store.generateFilename()}
+        onSave={handleSaveConfirm}
+        onCancel={() => setShowSaveDialog(false)}
+      />
+      <div className="toolbar">
+        <div className="toolbar-section">
+          <h1>Mindmap Editor</h1>
+        </div>
 
-      <div className="toolbar-section">
-        <Templates />
-      </div>
+        <div className="toolbar-section">
+          <Templates />
+        </div>
 
-      <div className="toolbar-section">
-        <button
-          type="button"
-          onClick={handleSave}
-          className="toolbar-btn"
-          title="Save to JSON file (Ctrl+S)"
-        >
-          💾 Save
-        </button>
-        <button
-          type="button"
-          onClick={handleOpen}
-          className="toolbar-btn"
-          title="Open JSON file (Ctrl+O)"
-        >
-          📂 Open
-        </button>
-      </div>
+        <div className="toolbar-section">
+          <button
+            type="button"
+            onClick={handleSaveClick}
+            className="toolbar-btn"
+            title="Save to JSON file (Ctrl+S)"
+          >
+            💾 Save
+          </button>
+          <button
+            type="button"
+            onClick={handleOpen}
+            className="toolbar-btn"
+            title="Open JSON file (Ctrl+O)"
+          >
+            📂 Open
+          </button>
+        </div>
 
-      <div className="toolbar-section">
-        <button
-          type="button"
-          onClick={handleUndo}
-          className="toolbar-btn"
-          title="Undo (Ctrl+Z)"
-        >
-          ↶ Undo
-        </button>
-        <button
-          type="button"
-          onClick={handleRedo}
-          className="toolbar-btn"
-          title="Redo (Ctrl+Y)"
-        >
-          ↷ Redo
-        </button>
-      </div>
+        <div className="toolbar-section">
+          <button
+            type="button"
+            onClick={handleUndo}
+            className="toolbar-btn"
+            title="Undo (Ctrl+Z)"
+          >
+            ↶ Undo
+          </button>
+          <button
+            type="button"
+            onClick={handleRedo}
+            className="toolbar-btn"
+            title="Redo (Ctrl+Y)"
+          >
+            ↷ Redo
+          </button>
+        </div>
 
-      <div className="toolbar-section">
-        <button
-          type="button"
-          onClick={handleExportPNG}
-          className="toolbar-btn"
-          title="Export as PNG"
-        >
-          🖼️ PNG
-        </button>
-        <button
-          type="button"
-          onClick={handleExportSVG}
-          className="toolbar-btn"
-          title="Export as SVG"
-        >
-          📐 SVG
-        </button>
-        <button
-          type="button"
-          onClick={handleExportJSON}
-          className="toolbar-btn"
-          title="Export as JSON"
-        >
-          📄 JSON
-        </button>
-      </div>
+        <div className="toolbar-section">
+          <button
+            type="button"
+            onClick={handleExportPNG}
+            className="toolbar-btn"
+            title="Export as PNG"
+          >
+            🖼️ PNG
+          </button>
+          <button
+            type="button"
+            onClick={handleExportSVG}
+            className="toolbar-btn"
+            title="Export as SVG"
+          >
+            📐 SVG
+          </button>
+          <button
+            type="button"
+            onClick={handleExportJSON}
+            className="toolbar-btn"
+            title="Export as JSON"
+          >
+            📄 JSON
+          </button>
+        </div>
 
-      <div className="toolbar-section">
-        <button
-          type="button"
-          onClick={handleClear}
-          className="toolbar-btn danger"
-          title="Clear all"
-        >
-          🗑️ Clear
-        </button>
+        <div className="toolbar-section">
+          <button
+            type="button"
+            onClick={handleClear}
+            className="toolbar-btn danger"
+            title="Clear all"
+          >
+            🗑️ Clear
+          </button>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
