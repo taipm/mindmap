@@ -23,8 +23,24 @@ function App() {
   const store = useMindmapStore();
   const storeNodes = useMindmapStore((state) => state.nodes);
   const storeEdges = useMindmapStore((state) => state.edges);
-  const [nodes, setNodes, onNodesChange] = useNodesState(store.getInitialNodes());
-  const [edges, setEdges, onEdgesChange] = useEdgesState(store.getInitialEdges());
+
+  // Initialize with store's current state
+  const initialNodes = storeNodes.map((node) => ({
+    id: node.id,
+    data: { label: node.title, color: node.color },
+    position: node.position,
+    type: 'mindmapNode',
+  })) as any[];
+
+  const initialEdges = storeEdges.map((edge) => ({
+    id: edge.id,
+    source: edge.from,
+    target: edge.to,
+    label: edge.label,
+  })) as any[];
+
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
   // Sync store changes to React state
   useEffect(() => {
