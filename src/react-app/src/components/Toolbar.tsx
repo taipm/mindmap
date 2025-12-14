@@ -19,7 +19,21 @@ export default function Toolbar() {
   const handleSave = async () => {
     try {
       const jsonData = store.saveFile(store.filename || 'mindmap');
-      const result = await window.electronAPI.saveFile('mindmap.json', jsonData);
+
+      if (!(globalThis as any).electronAPI) {
+        // Fallback for development mode
+        const blob = new Blob([jsonData], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'mindmap.json';
+        a.click();
+        URL.revokeObjectURL(url);
+        alert('Saved as mindmap.json (development mode)');
+        return;
+      }
+
+      const result = await (globalThis as any).electronAPI.saveFile('mindmap.json', jsonData);
 
       if (result.success) {
         alert(`Saved to: ${result.path}`);
@@ -32,7 +46,12 @@ export default function Toolbar() {
 
   const handleOpen = async () => {
     try {
-      const result = await window.electronAPI.openFile();
+      if (!(globalThis as any).electronAPI) {
+        alert('Open file feature requires Electron context');
+        return;
+      }
+
+      const result = await (globalThis as any).electronAPI.openFile();
 
       if (result.success && result.content) {
         store.loadFile(result.content);
@@ -58,7 +77,18 @@ export default function Toolbar() {
       });
 
       const dataUrl = image.toDataURL('image/png');
-      const result = await window.electronAPI.exportImage('mindmap.png', dataUrl, 'png');
+
+      if (!(globalThis as any).electronAPI) {
+        // Fallback for development mode
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = 'mindmap.png';
+        link.click();
+        alert('Exported as mindmap.png (development mode)');
+        return;
+      }
+
+      const result = await (globalThis as any).electronAPI.exportImage('mindmap.png', dataUrl, 'png');
 
       if (result.success) {
         alert(`Exported to: ${result.path}`);
@@ -78,7 +108,21 @@ export default function Toolbar() {
       }
 
       const svg = (canvas as HTMLElement).innerHTML;
-      const result = await window.electronAPI.exportImage('mindmap.svg', svg, 'svg');
+
+      if (!(globalThis as any).electronAPI) {
+        // Fallback for development mode
+        const blob = new Blob([svg], { type: 'image/svg+xml' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'mindmap.svg';
+        link.click();
+        URL.revokeObjectURL(url);
+        alert('Exported as mindmap.svg (development mode)');
+        return;
+      }
+
+      const result = await (globalThis as any).electronAPI.exportImage('mindmap.svg', svg, 'svg');
 
       if (result.success) {
         alert(`Exported to: ${result.path}`);
