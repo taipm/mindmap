@@ -6,6 +6,7 @@ import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import Templates from './Templates';
 import SaveDialog from './SaveDialog';
 import SearchBar from './SearchBar';
+import LayoutSelector from './LayoutSelector';
 import './Toolbar.css';
 
 declare global {
@@ -26,6 +27,7 @@ export default function Toolbar() {
   const markTabAsSaved = useTabsStore((state) => state.markTabAsSaved);
   const activeTabId = useTabsStore((state) => state.activeTabId);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [showLayoutSelector, setShowLayoutSelector] = useState(false);
 
   const handleNew = () => {
     // Save current tab state before creating new
@@ -283,6 +285,9 @@ export default function Toolbar() {
         onSave={handleSaveConfirm}
         onCancel={() => setShowSaveDialog(false)}
       />
+      {showLayoutSelector && (
+        <LayoutSelector onClose={() => setShowLayoutSelector(false)} />
+      )}
       <div className="toolbar">
         <div className="toolbar-section">
           <h1>Mindmap Editor</h1>
@@ -337,6 +342,17 @@ export default function Toolbar() {
             title="Redo (Ctrl+Y)"
           >
             ↷ Redo
+          </button>
+        </div>
+
+        <div className="toolbar-section">
+          <button
+            type="button"
+            onClick={() => setShowLayoutSelector(true)}
+            className="toolbar-btn"
+            title="Auto-arrange nodes using layout algorithm"
+          >
+            🔄 Layout
           </button>
         </div>
 
