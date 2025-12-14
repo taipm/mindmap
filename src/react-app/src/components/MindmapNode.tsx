@@ -16,7 +16,6 @@ interface MindmapNodeProps {
 export default function MindmapNode({ data, id, selected }: MindmapNodeProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(data.label);
-  const [latex, setLatex] = useState('');
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
   const nodes = useMindmapStore((state) => state.nodes);
   const updateNode = useMindmapStore((state) => state.updateNode);
@@ -29,31 +28,48 @@ export default function MindmapNode({ data, id, selected }: MindmapNodeProps) {
   const searchQuery = useMindmapStore((state) => state.searchQuery);
 
   const currentNode = nodes.find((n) => n.id === id);
-  const latexContent = currentNode?.metadata?.latex || '';
 
   const isHighlighted = highlightedNodeIds.includes(id);
   const isMatched = searchQuery && highlightedNodeIds.length > 0 && isHighlighted;
 
+  // Parse title to extract LaTeX formulas (wrapped in $...$)
+  const parseTitle = (text: string) => {
+    const parts: Array<{ type: 'text' | 'latex'; content: string }> = [];
+    const regex = /\$([^$]+)\$/g;
+    let lastIndex = 0;
+    let match;
+
+    while ((match = regex.exec(text)) !== null) {
+      // Add text before LaTeX
+      if (match.index > lastIndex) {
+        parts.push({ type: 'text', content: text.slice(lastIndex, match.index) });
+      }
+      // Add LaTeX
+      parts.push({ type: 'latex', content: match[1] });
+      lastIndex = regex.lastIndex;
+    }
+
+    // Add remaining text
+    if (lastIndex < text.length) {
+      parts.push({ type: 'text', content: text.slice(lastIndex) });
+    }
+
+    return parts.length > 0 ? parts : [{ type: 'text', content: text }];
+  };
+
+  const titleParts = parseTitle(title);
+
   const handleSave = () => {
     if (title.trim()) {
-      const updatedMetadata = {
-        ...currentNode?.metadata,
-        ...(latex.trim() && { latex }),
-      };
-      updateNode(id, {
-        title,
-        ...(Object.keys(updatedMetadata).length > 0 && { metadata: updatedMetadata }),
-      });
+      updateNode(id, { title });
       if (activeTabId) {
         markTabAsUnsaved(activeTabId);
       }
       setIsEditing(false);
-      setLatex('');
     }
   };
 
   const handleEditStart = () => {
-    setLatex(latexContent);
     setIsEditing(true);
   };
 
@@ -100,7 +116,6 @@ export default function MindmapNode({ data, id, selected }: MindmapNodeProps) {
   };
 
   const handleEditFromContext = () => {
-    setLatex(latexContent);
     setIsEditing(true);
   };
 
@@ -137,28 +152,10 @@ export default function MindmapNode({ data, id, selected }: MindmapNodeProps) {
             onBlur={handleSave}
             onKeyDown={(e) => {
               if (e.key === 'Enter') handleSave();
-              if (e.key === 'Escape') {
-                setIsEditing(false);
-                setLatex('');
-              }
+              if (e.key === 'Escape') setIsEditing(false);
             }}
-            placeholder="Node title"
+            placeholder='Node title (use $...$ for LaTeX)'
             autoFocus
-          />
-          <input
-            type="text"
-            value={latex}
-            onChange={(e) => setLatex(e.target.value)}
-            onBlur={handleSave}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') handleSave();
-              if (e.key === 'Escape') {
-                setIsEditing(false);
-                setLatex('');
-              }
-            }}
-            placeholder="LaTeX formula (optional)"
-            className="node-edit-latex"
           />
         </div>
       ) : (
@@ -166,8 +163,13 @@ export default function MindmapNode({ data, id, selected }: MindmapNodeProps) {
           className="node-label"
           onDoubleClick={() => handleEditStart()}
         >
-          {data.label}
-          {latexContent && <LaTeXRenderer latex={latexContent} />}
+          {titleParts.map((part, idx) =>
+            part.type === 'latex' ? (
+              <LaTeXRenderer key={idx} latex={part.content} />
+            ) : (
+              <span key={idx}>{part.content}</span>
+            )
+          )}
         </div>
       )}
 

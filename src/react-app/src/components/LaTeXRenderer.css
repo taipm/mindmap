@@ -1,17 +1,18 @@
 .latex-renderer {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
-  margin-top: 4px;
+  font-size: 0.95em;
+  margin: 0;
 }
 
 .latex-renderer .katex {
   margin: 0;
+  font-size: 1em;
 }
 
 .latex-error {
-  font-size: 12px;
+  font-size: 0.9em;
   color: rgba(255, 255, 255, 0.7);
   font-style: italic;
   word-break: break-all;
