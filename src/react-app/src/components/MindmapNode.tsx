@@ -17,7 +17,6 @@ export default function MindmapNode({ data, id, selected }: MindmapNodeProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(data.label);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
-  const nodes = useMindmapStore((state) => state.nodes);
   const updateNode = useMindmapStore((state) => state.updateNode);
   const deleteNode = useMindmapStore((state) => state.deleteNode);
   const addNode = useMindmapStore((state) => state.addNode);
@@ -26,8 +25,6 @@ export default function MindmapNode({ data, id, selected }: MindmapNodeProps) {
   const markTabAsUnsaved = useTabsStore((state) => state.markTabAsUnsaved);
   const highlightedNodeIds = useMindmapStore((state) => state.highlightedNodeIds);
   const searchQuery = useMindmapStore((state) => state.searchQuery);
-
-  const currentNode = nodes.find((n) => n.id === id);
 
   const isHighlighted = highlightedNodeIds.includes(id);
   const isMatched = searchQuery && highlightedNodeIds.length > 0 && isHighlighted;

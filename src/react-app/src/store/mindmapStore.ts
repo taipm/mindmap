@@ -537,6 +537,7 @@ export const useMindmapStore = create<MindmapStore>((set, get) => {
         edges: [...state.edges, edge],
       }));
       get().pushHistory();
+      persistTabState();
     },
 
     deleteEdge: (id) => {
@@ -544,6 +545,7 @@ export const useMindmapStore = create<MindmapStore>((set, get) => {
         edges: state.edges.filter((edge) => edge.id !== id),
       }));
       get().pushHistory();
+      persistTabState();
     },
 
     pushHistory: () => {
