@@ -14,8 +14,16 @@ export default function SaveDialog({
   onSave,
   onCancel,
 }: SaveDialogProps) {
-  const [filename, setFilename] = useState(defaultFilename);
+  const [filename, setFilename] = useState('');
   const [error, setError] = useState('');
+
+  // Reset filename when dialog opens
+  React.useEffect(() => {
+    if (isOpen) {
+      setFilename(defaultFilename);
+      setError('');
+    }
+  }, [isOpen, defaultFilename]);
 
   const handleSave = () => {
     const trimmed = filename.trim();
@@ -23,13 +31,11 @@ export default function SaveDialog({
       setError('Filename cannot be empty');
       return;
     }
-    if (!/^[a-zA-Z0-9_\-\s]+$/.test(trimmed)) {
-      setError('Filename can only contain letters, numbers, spaces, hyphens, and underscores');
+    if (!/^[a-zA-Z0-9_\-\s:.]+$/.test(trimmed)) {
+      setError('Filename can only contain letters, numbers, spaces, hyphens, underscores, colons, and dots');
       return;
     }
     onSave(trimmed);
-    setFilename(defaultFilename);
-    setError('');
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
