@@ -265,6 +265,33 @@ export const useMindmapStore = create<MindmapStore>((set, get) => {
     },
   ];
 
+  // Helper function to highlight search results and parent nodes
+  const computeHighlightedNodes = (nodes: MindmapNode[], query: string): string[] => {
+    if (!query.trim()) {
+      return [];
+    }
+
+    const highlighted = new Set<string>();
+    const addParentsToHighlighted = (nId: string | null) => {
+      let currentId = nId;
+      while (currentId) {
+        highlighted.add(currentId);
+        // eslint-disable-next-line no-loop-func
+        const parent = nodes.find((n) => n.id === currentId);
+        currentId = parent?.parentId || null;
+      }
+    };
+
+    nodes.forEach((node) => {
+      if (node.title.toLowerCase().includes(query.toLowerCase())) {
+        highlighted.add(node.id);
+        addParentsToHighlighted(node.parentId);
+      }
+    });
+
+    return Array.from(highlighted);
+  };
+
   // Load recent files from localStorage
   let initialRecentFiles: RecentFile[] = [];
   try {
@@ -758,64 +785,17 @@ export const useMindmapStore = create<MindmapStore>((set, get) => {
     },
 
     setSearchQuery: (query: string) => {
-      set((state) => {
-        const trimmedQuery = query.toLowerCase().trim();
-
-        if (!trimmedQuery) {
-          return { searchQuery: query, highlightedNodeIds: [] };
-        }
-
-        const highlighted = new Set<string>();
-        state.nodes.forEach((node) => {
-          if (node.title.toLowerCase().includes(trimmedQuery)) {
-            highlighted.add(node.id);
-            // Also highlight parent nodes
-            const addParentsToHighlighted = (nId: string | null) => {
-              let currentId = nId;
-              while (currentId) {
-                highlighted.add(currentId);
-                const parent = state.nodes.find((n) => n.id === currentId);
-                currentId = parent?.parentId || null;
-              }
-            };
-            addParentsToHighlighted(node.parentId);
-          }
-        });
-
-        return {
-          searchQuery: query,
-          highlightedNodeIds: Array.from(highlighted),
-        };
-      });
+      set((state) => ({
+        searchQuery: query,
+        highlightedNodeIds: computeHighlightedNodes(state.nodes, query),
+      }));
     },
 
     updateHighlightedNodes: () => {
       const state = get();
-      const query = state.searchQuery.toLowerCase().trim();
-
-      if (!query) {
-        set({ highlightedNodeIds: [] });
-        return;
-      }
-
-      const highlighted = new Set<string>();
-      state.nodes.forEach((node) => {
-        if (node.title.toLowerCase().includes(query)) {
-          highlighted.add(node.id);
-          // Also highlight parent nodes
-          const addParentsToHighlighted = (nId: string | null) => {
-            let currentId = nId;
-            while (currentId) {
-              highlighted.add(currentId);
-              const parent = state.nodes.find((n) => n.id === currentId);
-              currentId = parent?.parentId || null;
-            }
-          };
-          addParentsToHighlighted(node.parentId);
-        }
+      set({
+        highlightedNodeIds: computeHighlightedNodes(state.nodes, state.searchQuery),
       });
-
-      set({ highlightedNodeIds: Array.from(highlighted) });
     },
   };
 });
