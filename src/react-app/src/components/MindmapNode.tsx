@@ -15,6 +15,7 @@ export default function MindmapNode({ data, id, selected }: MindmapNodeProps) {
   const updateNode = useMindmapStore((state) => state.updateNode);
   const deleteNode = useMindmapStore((state) => state.deleteNode);
   const addNode = useMindmapStore((state) => state.addNode);
+  const duplicateNode = useMindmapStore((state) => state.duplicateNode);
 
   const handleSave = () => {
     if (title.trim()) {
@@ -36,6 +37,13 @@ export default function MindmapNode({ data, id, selected }: MindmapNodeProps) {
   const handleDelete = () => {
     if (id !== 'root') {
       deleteNode(id);
+    }
+  };
+
+  const handleDuplicate = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (id !== 'root') {
+      duplicateNode(id);
     }
   };
 
@@ -71,6 +79,7 @@ export default function MindmapNode({ data, id, selected }: MindmapNodeProps) {
 
       <div className="node-actions">
         <button
+          type="button"
           className="node-btn add-btn"
           onClick={handleAddChild}
           title="Add child node"
@@ -78,13 +87,24 @@ export default function MindmapNode({ data, id, selected }: MindmapNodeProps) {
           +
         </button>
         {id !== 'root' && (
-          <button
-            className="node-btn delete-btn"
-            onClick={handleDelete}
-            title="Delete node"
-          >
-            ✕
-          </button>
+          <>
+            <button
+              type="button"
+              className="node-btn duplicate-btn"
+              onClick={handleDuplicate}
+              title="Duplicate node"
+            >
+              📋
+            </button>
+            <button
+              type="button"
+              className="node-btn delete-btn"
+              onClick={handleDelete}
+              title="Delete node"
+            >
+              ✕
+            </button>
+          </>
         )}
       </div>
 

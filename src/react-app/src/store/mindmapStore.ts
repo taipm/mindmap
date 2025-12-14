@@ -50,9 +50,69 @@ interface MindmapStore {
   getInitialNodes: () => Node[];
   getInitialEdges: () => Edge[];
   setNodes: (nodes: Node[]) => void;
+
+  // Templates
+  loadTemplate: (templateKey: string) => void;
+  getTemplates: () => string[];
+
+  // Duplicate
+  duplicateNode: (nodeId: string) => string;
+
+  // Smart filename
+  generateFilename: (templateName?: string) => string;
 }
 
 const COLORS = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE'];
+
+// Predefined templates for quick start
+const TEMPLATES = {
+  project: {
+    title: 'Project Planning',
+    nodes: [
+      { id: 'root', title: 'Project', parentId: null, position: { x: 0, y: 0 }, color: '#FF6B6B' },
+      { id: 'scope', title: 'Scope', parentId: 'root', position: { x: 200, y: 150 }, color: '#4ECDC4' },
+      { id: 'timeline', title: 'Timeline', parentId: 'root', position: { x: -200, y: 150 }, color: '#45B7D1' },
+      { id: 'resources', title: 'Resources', parentId: 'root', position: { x: 200, y: 300 }, color: '#FFA07A' },
+      { id: 'risks', title: 'Risks', parentId: 'root', position: { x: -200, y: 300 }, color: '#98D8C8' },
+    ],
+    edges: [
+      { id: 'edge-root-scope', from: 'root', to: 'scope' },
+      { id: 'edge-root-timeline', from: 'root', to: 'timeline' },
+      { id: 'edge-root-resources', from: 'root', to: 'resources' },
+      { id: 'edge-root-risks', from: 'root', to: 'risks' },
+    ],
+  },
+  learning: {
+    title: 'Learning Path',
+    nodes: [
+      { id: 'root', title: 'Learn', parentId: null, position: { x: 0, y: 0 }, color: '#45B7D1' },
+      { id: 'basics', title: 'Basics', parentId: 'root', position: { x: 200, y: 150 }, color: '#4ECDC4' },
+      { id: 'advanced', title: 'Advanced', parentId: 'root', position: { x: -200, y: 150 }, color: '#FF6B6B' },
+      { id: 'practice', title: 'Practice', parentId: 'root', position: { x: 200, y: 300 }, color: '#F7DC6F' },
+      { id: 'projects', title: 'Projects', parentId: 'root', position: { x: -200, y: 300 }, color: '#BB8FCE' },
+    ],
+    edges: [
+      { id: 'edge-root-basics', from: 'root', to: 'basics' },
+      { id: 'edge-root-advanced', from: 'root', to: 'advanced' },
+      { id: 'edge-root-practice', from: 'root', to: 'practice' },
+      { id: 'edge-root-projects', from: 'root', to: 'projects' },
+    ],
+  },
+  brainstorm: {
+    title: 'Brainstorming',
+    nodes: [
+      { id: 'root', title: 'Ideas', parentId: null, position: { x: 0, y: 0 }, color: '#FFA07A' },
+      { id: 'features', title: 'Features', parentId: 'root', position: { x: 200, y: 150 }, color: '#FF6B6B' },
+      { id: 'improvements', title: 'Improvements', parentId: 'root', position: { x: -200, y: 150 }, color: '#4ECDC4' },
+      { id: 'challenges', title: 'Challenges', parentId: 'root', position: { x: 200, y: 300 }, color: '#45B7D1' },
+    ],
+    edges: [
+      { id: 'edge-root-features', from: 'root', to: 'features' },
+      { id: 'edge-root-improvements', from: 'root', to: 'improvements' },
+      { id: 'edge-root-challenges', from: 'root', to: 'challenges' },
+    ],
+  },
+};
 
 export const useMindmapStore = create<MindmapStore>((set, get) => {
   // Initialize with root node
@@ -268,6 +328,88 @@ export const useMindmapStore = create<MindmapStore>((set, get) => {
           }
         }
       });
+    },
+
+    loadTemplate: (templateKey: string) => {
+      const template = TEMPLATES[templateKey as keyof typeof TEMPLATES];
+      if (template) {
+        // Remap node IDs with unique timestamps
+        const idMap: Record<string, string> = {};
+        const newNodes = template.nodes.map((node) => {
+          const newId = node.id === 'root' ? 'root' : `node-${Date.now()}-${Math.random()}`;
+          idMap[node.id] = newId;
+          return {
+            ...node,
+            id: newId,
+          };
+        });
+
+        // Update edges with new IDs
+        const newEdges = template.edges.map((edge) => ({
+          ...edge,
+          id: `edge-${idMap[edge.from]}-${idMap[edge.to]}`,
+          from: idMap[edge.from],
+          to: idMap[edge.to],
+        }));
+
+        set({
+          nodes: newNodes,
+          edges: newEdges,
+          history: [{ nodes: newNodes, edges: newEdges }],
+          historyIndex: 0,
+          filename: template.title,
+        });
+      }
+    },
+
+    getTemplates: () => {
+      return Object.entries(TEMPLATES).map(([key, value]) => value.title);
+    },
+
+    duplicateNode: (nodeId) => {
+      const state = get();
+      const nodeToDuplicate = state.nodes.find((n) => n.id === nodeId);
+
+      if (!nodeToDuplicate || nodeToDuplicate.id === 'root') {
+        return ''; // Cannot duplicate root
+      }
+
+      const newNodeId = `node-${Date.now()}`;
+      const newNode: MindmapNode = {
+        ...nodeToDuplicate,
+        id: newNodeId,
+        position: {
+          x: nodeToDuplicate.position.x + 150,
+          y: nodeToDuplicate.position.y + 80,
+        },
+      };
+
+      // Create edge if parent exists
+      const newEdge = nodeToDuplicate.parentId ? {
+        id: `edge-${nodeToDuplicate.parentId}-${newNodeId}`,
+        from: nodeToDuplicate.parentId,
+        to: newNodeId,
+      } : null;
+
+      set((state) => ({
+        nodes: [...state.nodes, newNode],
+        edges: newEdge ? [...state.edges, newEdge] : state.edges,
+      }));
+
+      get().pushHistory();
+      return newNodeId;
+    },
+
+    generateFilename: (templateName?: string) => {
+      const now = new Date();
+      const date = now.toLocaleDateString('vi-VN', { year: 'numeric', month: '2-digit', day: '2-digit' }).replaceAll('/', '-');
+      const time = now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }).replaceAll(' ', '_');
+
+      if (templateName) {
+        return `${templateName}_${date}_${time}`;
+      }
+
+      return `mindmap_${date}_${time}`;
     },
   };
 });
