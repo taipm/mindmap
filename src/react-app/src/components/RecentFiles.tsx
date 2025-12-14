@@ -33,16 +33,6 @@ export default function RecentFiles() {
     }
   };
 
-  if (recentFiles.length === 0) {
-    return (
-      <div className="recent-files-empty">
-        <div className="empty-icon">📂</div>
-        <p>No recent files</p>
-        <small>Files you work on will appear here</small>
-      </div>
-    );
-  }
-
   return (
     <div className={`recent-files-panel ${isExpanded ? 'expanded' : 'collapsed'}`}>
       <div className="recent-files-header">
@@ -67,7 +57,15 @@ export default function RecentFiles() {
         )}
       </div>
 
-      {isExpanded && (
+      {isExpanded && recentFiles.length === 0 && (
+        <div className="recent-files-empty-content">
+          <div className="empty-icon">📂</div>
+          <p>No recent files yet</p>
+          <small>Files you save will appear here</small>
+        </div>
+      )}
+
+      {isExpanded && recentFiles.length > 0 && (
         <div className="recent-files-list">
           {recentFiles.map((file, index) => (
             <div
@@ -95,7 +93,7 @@ export default function RecentFiles() {
         </div>
       )}
 
-      {isExpanded && (
+      {isExpanded && recentFiles.length > 0 && (
         <div className="recent-files-footer">
           <small>Click to load file</small>
         </div>
